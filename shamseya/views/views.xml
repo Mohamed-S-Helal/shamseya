@@ -355,7 +355,7 @@
         </record>
 
         <record id="action_request" model="ir.actions.act_window">
-            <field name="name">request</field>
+            <field name="name">Request</field>
             <field name="res_model">case.request</field>
             <field name="view_mode">tree,form,kanban</field>
             <field name="help" type="html">
