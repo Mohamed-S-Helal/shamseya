@@ -21,10 +21,9 @@
                 <form>
                     <sheet>
                         <div name="div1" class="oe_button_box">
-                            <!--                            <button type="object" name="action_create_case"-->
-                            <!--                                    string="Create Case" class="oe_highlight"-->
-                            <!--                                    groups="plusone_management_system.group_plusone_general_user">-->
-                            <!--                            </button>-->
+                            <button type="object" name="action_create_request"
+                                    string="Create Request" class="oe_highlight">
+                            </button>
                             <button id="action_view_cases" class="oe_stat_button" type="object" name="open_requests"
                                     icon="fa-list">
                                 <field string="Requests" name="requests_count" widget="statinfo"/>

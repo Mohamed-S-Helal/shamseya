@@ -85,6 +85,24 @@ class Case(models.Model):
         # action['context'] = {'search_default_case_id': 'asas'}
         return action
 
+    def action_create_request(self):
+        vals = {
+            'case_id': self.id,
+        }
+
+        request = self.env['case.request'].sudo().create(vals)
+        context = dict(self.env.context or {})
+        action = {
+            'view_mode': 'form',
+            'res_model': 'case.request',
+            'view_id': self.env.ref('shamseya.view_request_form').id,
+            'type': 'ir.actions.act_window',
+            'res_id': request.id,
+            'context': context,
+            'target': 'self'
+        }
+        return action
+
 
     @api.model
     def create(self, vals):
