@@ -1,0 +1,523 @@
+<odoo>
+    <data>
+
+        <record id="view_case_tree" model="ir.ui.view">
+            <field name="name">view.case.tree</field>
+            <field name="model">res.partner</field>
+            <field name="arch" type="xml">
+                <tree string="Contacts" sample="0" multi_edit="1" create="1">
+                    <field name="code" string="Code"/>
+                    <field name="name" string="Name"/>
+                    <field name="create_uid"/>
+                    <field name="create_date" readonly="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_case_form" model="ir.ui.view">
+            <field name="name">view.case.form</field>
+            <field name="model">res.partner</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div name="div1" class="oe_button_box">
+                            <!--                            <button type="object" name="action_create_case"-->
+                            <!--                                    string="Create Case" class="oe_highlight"-->
+                            <!--                                    groups="plusone_management_system.group_plusone_general_user">-->
+                            <!--                            </button>-->
+                            <button id="action_view_cases" class="oe_stat_button" type="object" name="open_requests"
+                                    icon="fa-list">
+                                <field string="Requests" name="requests_count" widget="statinfo"/>
+                            </button>
+                        </div>
+                        <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
+                                attrs="{'invisible': [('active', '=', True)]}"/>
+                        <field name="avatar_128" invisible="1"/>
+                        <field name="image_1920" widget='image' class="oe_avatar"
+                               options='{"preview_image": "avatar_128"}'/>
+                        <div class="oe_title mb24">
+                            <field name="active" invisible="1"/>
+                            <h1>
+                                <field id="individual" class="text-break" name="name" default_focus="1"
+                                       placeholder="e.g. Brandom Freeman"/>
+                            </h1>
+                            <h2>
+                                <field name="code" placeholder="Code (auto-generated)"/>
+                            </h2>
+                        </div>
+                        <group col="6">
+                            <group colspan="2">
+                                <span class="o_form_label o_td_label" name="address_name">
+                                    Address
+                                </span>
+                                <div class="o_address_format">
+                                    <field name="country_id" placeholder="Country" class="o_address_country"
+                                           options='{"no_open": True, "no_create": True}'
+                                    />
+                                    <field name="state_id" class="o_address_country" placeholder="State"
+                                           options="{'no_open': True, 'no_quick_create': True}"
+                                           context="{'country_id': country_id, 'default_country_id': country_id}"/>
+                                    <field name="area" placeholder="Area..." class="o_address_street"/>
+                                </div>
+                                <field name="create_date" readonly="1"/>
+                                <field name="create_uid"/>
+                                <field name="referral"/>
+                                <field name="is_case" invisible="1"/>
+                            </group>
+                            <group colspan="2">
+                                <field name="phone" widget="phone"/>
+                                <field name="gender"/>
+                                <field name="date_of_birth"/>
+                                <field name="age" readonly="1"/>
+                                <field name="marital_status"/>
+                            </group>
+                            <group>
+                                <field name="income_resource"/>
+                                <field name="pension_type"/>
+                                <field name="currency_id"/>
+                                <field name="average_income" widget="monetary"/>
+                                <field name="has_insurance"/>
+                                <field name="insurance_type" attrs="{'invisible': [('has_insurance', '=', False)]}"/>
+                                <field name="insurance_code" attrs="{'invisible': [('has_insurance', '=', False)]}"/>
+
+                            </group>
+                        </group>
+
+
+                        <notebook>
+                            <page name="medical_history" string="Medical History">
+                                <group>
+                                    <field name="medical_history_lines" nolabel="1"
+                                           widget="one2many_list">
+                                        <tree editable="1">
+                                            <field name="diagnosis"/>
+                                            <field name="start_date"/>
+                                            <field name="duration"/>
+                                            <field name="medicine"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
+                            <page name='attachments' string="Attachments">
+                                <group col="4">
+                                    <group colspan="1">
+                                        <label for="personal_id_card"/>
+                                    </group>
+                                    <group colspan="1" attrs="{'invisible': [('has_insurance', '=', False)]}">
+                                        <label for="insurance_card"/>
+                                    </group>
+                                    <group colspan="1">
+                                        <label for="health_card"/>
+                                    </group>
+                                    <group colspan="1">
+                                        <label for="other_attachments"/>
+                                    </group>
+                                </group>
+                                <group col="4">
+                                    <group colspan="1">
+                                        <field name="personal_id_card"
+                                               widget="many2many_binary" nolabel="1"/>
+                                    </group>
+                                    <group colspan="1" attrs="{'invisible': [('has_insurance', '=', False)]}">
+                                        <field name="insurance_card"
+                                               widget="many2many_binary" nolabel="1"/>
+                                    </group>
+                                    <group colspan="1">
+                                        <field name="health_card"
+                                               widget="many2many_binary" nolabel="1"/>
+                                    </group>
+                                    <group colspan="1">
+                                        <field name="other_attachments"
+                                               widget="many2many_binary" nolabel="1"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page name="request_history" string="Request History">
+                                <group>
+                                    <field name="requests" readonly="1" nolabel="1"
+                                           widget="one2many_list">
+                                        <tree>
+                                            <field name="case_id"/>
+                                            <field name="basic_service"/>
+                                            <field name="complaint"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_case_kanban" model="ir.ui.view">
+            <field name="name">view.case.kanban</field>
+            <field name="model">res.partner</field>
+            <field name="arch" type="xml">
+                <kanban class="o_res_partner_kanban" sample="1" create="0">
+                    <field name="id"/>
+                    <field name="color"/>
+                    <field name="name"/>
+                    <field name="title"/>
+                    <field name="email"/>
+                    <field name="parent_id"/>
+                    <field name="is_company"/>
+                    <field name="function"/>
+                    <field name="phone"/>
+                    <field name="street"/>
+                    <field name="street2"/>
+                    <field name="zip"/>
+                    <field name="city"/>
+                    <field name="country_id"/>
+                    <field name="mobile"/>
+                    <field name="state_id"/>
+                    <field name="category_id"/>
+                    <field name="avatar_128"/>
+                    <field name="type"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban">
+                                <t t-if="!record.is_company.raw_value">
+                                    <t t-set="background_image"
+                                       t-value="kanban_image('res.partner', 'avatar_128', record.id.raw_value)"/>
+                                    <div class="o_kanban_image_fill_left d-none d-md-block"
+                                         t-attf-style="background-image:url('#{background_image}')">
+                                        <img class="o_kanban_image_inner_pic" t-if="record.parent_id.raw_value"
+                                             t-att-alt="record.parent_id.value"
+                                             t-att-src="kanban_image('res.partner', 'avatar_128', record.parent_id.raw_value)"/>
+                                    </div>
+                                    <div class="o_kanban_image d-md-none"
+                                         t-attf-style="background-image: url(#{background_image})">
+                                        <img class="o_kanban_image_inner_pic" t-if="record.parent_id.raw_value"
+                                             t-att-alt="record.parent_id.value"
+                                             t-att-src="kanban_image('res.partner', 'avatar_128', record.parent_id.raw_value)"/>
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="o_kanban_image_fill_left o_kanban_image_full"
+                                         t-attf-style="background-image: url(#{kanban_image('res.partner', 'avatar_128', record.id.raw_value)})"
+                                         role="img"/>
+                                </t>
+                                <div class="oe_kanban_details d-flex flex-column">
+                                    <strong class="o_kanban_record_title oe_partner_heading">
+                                        <field name="name"/>
+                                    </strong>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!--        general partner custom search view -->
+        <record id="view_res_partner_filter_modified" model="ir.ui.view">
+            <field name="name">res.partner.select.modified</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name'][1]" position="after">
+                    <field name="referral" filter_domain="[('referral', 'ilike', self)]"/>
+                    <field name="create_uid" filter_domain="[('create_uid', 'ilike', self)]"/>
+                    <field name="state_id" filter_domain="[('state_id', 'ilike', self)]"/>
+                    <field name="area" filter_domain="[('area', 'ilike', self)]"/>
+                </xpath>
+            </field>
+        </record>
+
+
+        <record id="action_case" model="ir.actions.act_window">
+            <field name="name">Case</field>
+            <field name="res_model">res.partner</field>
+
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="context">{'default_is_case':True}</field>
+            <field name="domain">[('is_case', '=', True)]</field>
+            <field name="search_view_id" ref="base.view_res_partner_filter"/>
+            <field name="view_ids"
+                   eval="[(5, 0, 0),
+                               (0, 0, {'view_mode': 'tree', 'view_id': ref('shamseya.view_case_tree')}),
+                               (0, 0, {'view_mode': 'form', 'view_id': ref('shamseya.view_case_form')}),
+                               (0, 0, {'view_mode': 'kanban', 'view_id': ref('shamseya.view_case_kanban')})
+                               ]"
+            />
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Case
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_shamseya_root"
+                name="Shamseya"
+                web_icon="shamseya,static/description/icon.png"
+                sequence="0"
+        />
+
+        <menuitem
+                id="case_menu"
+                name="Cases"
+                parent="menu_shamseya_root"
+                groups=""
+                action="shamseya.action_case"
+                sequence="0"/>
+
+
+        <record id="view_users_form_inherit" model="ir.ui.view">
+            <field name="name">res.users.form.inherit</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group/field[@name='partner_id'][1]" position="after">
+                    <field name="prefix"/>
+                    <field name="country_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_request_tree" model="ir.ui.view">
+            <field name="name">view.request.tree</field>
+            <field name="model">case.request</field>
+            <field name="arch" type="xml">
+                <tree string="Contacts" sample="0" multi_edit="1" create="1">
+                    <field name="case_id"/>
+                    <field name="basic_service"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_request_form" model="ir.ui.view">
+            <field name="name">view.request.form</field>
+            <field name="model">case.request</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="case_id"
+                                   context="{'default_is_case':'True','form_view_ref':'shamseya.view_case_form'}"/>
+                            <field name="basic_service"/>
+                            <field name="description"/>
+                            <field name="complaint"/>
+                            <field name="create_uid"/>
+                            <field name="create_date" readonly="1"/>
+                        </group>
+                        <notebook>
+
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_request_kanban" model="ir.ui.view">
+            <field name="name">view.request.kanban</field>
+            <field name="model">case.request</field>
+            <field name="arch" type="xml">
+                <kanban class="o_res_partner_kanban" sample="1" create="0">
+                    <field name="id"/>
+                    <field name="case_id"/>
+                    <field name="basic_service"/>
+                    <field name="description"/>
+                    <field name="complaint"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban">
+
+                                <div class="o_kanban_image_fill_left o_kanban_image_full"
+                                     t-attf-style="background-image: url(#{kanban_image('res.partner', 'avatar_128', record.case_id.raw_value)})"
+                                     role="img"/>
+                                <div class="oe_kanban_details d-flex flex-column">
+                                    <strong class="o_kanban_record_title oe_partner_heading">
+                                        <field name="case_id"/>
+                                    </strong>
+                                    <field name="basic_service"/>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!--        request search view -->
+        <record id="view_request_filter" model="ir.ui.view">
+            <field name="name">case.request.filter</field>
+            <field name="model">case.request</field>
+            <field name="arch" type="xml">
+                <search string="Search Request">
+                    <field name="case_id" string="Case" filter_domain="[('case_id', 'ilike', self)]"/>
+                    <field name="basic_service" string="Basic Service"
+                           filter_domain="[('basic_service', 'ilike', self)]"/>
+                    <field name="complaint" string="Complaint" filter_domain="[('complaint', 'ilike', self)]"/>
+                    <field name="create_uid" string="Created By" filter_domain="[('create_uid', 'ilike', self)]"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_request" model="ir.actions.act_window">
+            <field name="name">request</field>
+            <field name="res_model">case.request</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Request
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="request_menu"
+                name="Requests"
+                parent="menu_shamseya_root"
+                groups=""
+                action="shamseya.action_request"
+                sequence="1"/>
+
+
+        <menuitem
+                id="menu_config"
+                name="Configuration"
+                parent="menu_shamseya_root"
+                groups=""
+                sequence="2"/>
+
+
+        <record id="action_area" model="ir.actions.act_window">
+            <field name="name">Area</field>
+            <field name="res_model">area</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Area
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_area"
+                name="Areas"
+                parent="menu_config"
+                groups=""
+                action="shamseya.action_area"
+                sequence="0"/>
+
+        <record id="action_referral" model="ir.actions.act_window">
+            <field name="name">Referral</field>
+            <field name="res_model">referral</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Referral
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_referral"
+                name="Referrals"
+                parent="menu_config"
+                groups=""
+                action="shamseya.action_referral"
+                sequence="1"/>
+
+        <record id="action_income_resource" model="ir.actions.act_window">
+            <field name="name">Income Resource</field>
+            <field name="res_model">income.resource</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Income Resource
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_income_resource"
+                name="Income Resources"
+                parent="menu_config"
+                groups=""
+                action="shamseya.action_income_resource"
+                sequence="2"/>
+
+        <record id="action_pension_type" model="ir.actions.act_window">
+            <field name="name">Pension Type</field>
+            <field name="res_model">pension.type</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Pension Type
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_pension_type"
+                name="Pension Types"
+                parent="menu_config"
+                groups=""
+                action="shamseya.action_pension_type"
+                sequence="3"/>
+
+        <record id="action_insurance_type" model="ir.actions.act_window">
+            <field name="name">Insurance Type</field>
+            <field name="res_model">insurance.type</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Insurance Type
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_insurance_type"
+                name="Insurance Types"
+                parent="menu_config"
+                groups=""
+                action="shamseya.action_insurance_type"
+                sequence="4"/>
+
+        <record id="action_diagnosis" model="ir.actions.act_window">
+            <field name="name">Diagnosis</field>
+            <field name="res_model">diagnosis</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Diagnosis
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_diagnosis"
+                name="Diagnosis"
+                parent="menu_config"
+                groups=""
+                action="shamseya.action_diagnosis"
+                sequence="5"/>
+
+        <record id="action_basic_service" model="ir.actions.act_window">
+            <field name="name">Basic Service</field>
+            <field name="res_model">basic.service</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Basic Service
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_basic_service"
+                name="Basic Services"
+                parent="menu_config"
+                groups=""
+                action="shamseya.action_basic_service"
+                sequence="5"/>
+
+
+
+
+    </data>
+</odoo>

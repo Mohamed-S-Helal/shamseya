@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_area,area,model_area,,1,1,1,1
+access_referral,referral,model_referral,,1,1,1,1
+access_income_resource,income_resource,model_income_resource,,1,1,1,1
+access_pension_type,pension_type,model_pension_type,,1,1,1,1
+access_insurance_type,insurance_type,model_insurance_type,,1,1,1,1
+access_diagnosis,diagnosis,model_diagnosis,,1,1,1,1
+access_medical_history_line,medical_history_line,model_medical_history_line,,1,1,1,1
+access_case_request,case_request,model_case_request,,1,1,1,1
+access_basic_service,basic_service,model_basic_service,,1,1,1,1
