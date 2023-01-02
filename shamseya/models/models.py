@@ -50,7 +50,7 @@ class Case(models.Model):
                                domain="[('country_id', '=?', country_id)]")
     country_id = fields.Many2one('res.country', string='Country', ondelete='restrict',
                                  default=lambda self: self.env.user.country_id)
-    area = fields.Many2one('area', domain="[('state_id', '=?', country_id)]")
+    area = fields.Many2one('area', domain="[('state_id', '=?', state_id)]")
 
     # request_ids = fields.One2many('plusone.case', 'patient_id', string='Request History')
     create_uid = fields.Many2one('res.users', string='Created By', readonly=0)
