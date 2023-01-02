@@ -72,7 +72,7 @@
                             </group>
                             <group>
                                 <field name="income_resource"/>
-                                <field name="pension_type" attrs="{'invisible': [('income_resource.name', '!=', 'معاش شهري')]}" />
+                                <field name="pension_type" />
                                 <field name="currency_id"/>
                                 <field name="average_income" widget="monetary"/>
                                 <field name="has_insurance"/>
@@ -322,7 +322,7 @@
             <field name="arch" type="xml">
                 <kanban class="o_res_partner_kanban" sample="1" create="0">
                     <field name="id"/>
-                    <progressbar field="state" colors="{&quot;done&quot;: &quot;success&quot;, &quot;blocked&quot;: &quot;danger&quot;}"/>
+<!--                    <progressbar field="state" colors="{&quot;done&quot;: &quot;success&quot;, &quot;blocked&quot;: &quot;danger&quot;}"/>-->
                     <field name="case_id"/>
                     <field name="basic_service"/>
                     <field name="description"/>
