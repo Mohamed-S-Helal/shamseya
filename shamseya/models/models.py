@@ -74,6 +74,8 @@ class Case(models.Model):
 
     requests_count = fields.Integer(compute='_compute_requests_count', string='Requests Count')
 
+
+
     def _compute_requests_count(self):
         for rec in self:
             rec.requests_count = len(rec.requests)
@@ -187,6 +189,12 @@ class CaseRequest(models.Model):
     description = fields.Text(related='basic_service.description')
 
     complaint = fields.Text()
+
+    state = fields.Selection([
+        ('new', 'طلب جديد'),
+        ('collected', 'تم تجميع البيانات الأساسية'),
+        ('directed', 'تم التوجيه'),
+        ('done', 'تم الحصول على الخدمة')], default='new')
 
 
 class BasicService(models.Model):
