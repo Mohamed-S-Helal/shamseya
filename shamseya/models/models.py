@@ -5,6 +5,13 @@ from odoo import models, fields, api
 from dateutil.relativedelta import relativedelta
 
 
+def get_years():
+    year_list = []
+    for i in range(2016, 2036):
+        year_list.append((i, str(i)))
+    return year_list
+
+
 class ResUser(models.Model):
     _inherit = 'res.users'
 
@@ -74,8 +81,6 @@ class Case(models.Model):
 
     requests_count = fields.Integer(compute='_compute_requests_count', string='Requests Count')
 
-
-
     def _compute_requests_count(self):
         for rec in self:
             rec.requests_count = len(rec.requests)
@@ -104,7 +109,6 @@ class Case(models.Model):
             'target': 'self'
         }
         return action
-
 
     @api.model
     def create(self, vals):
@@ -156,13 +160,13 @@ class Diagnosis(models.Model):
 class MedicalHistoryLine(models.Model):
     _name = 'medical.history.line'
 
-    case_id = fields.Many2one('res.partner',  store=1)
+    case_id = fields.Many2one('res.partner', store=1)
     diagnosis = fields.Many2one('diagnosis', required=1)
     start_date = fields.Date()
     duration_y = fields.Integer()
     duration_m = fields.Integer()
     duration = fields.Char(compute='_calculate_duration')
-    medicine = fields.Char()
+    medicine = fields.Many2one('medicine')
 
     @api.depends("start_date")
     def _calculate_duration(self):
@@ -180,27 +184,81 @@ class MedicalHistoryLine(models.Model):
                 rec.duration = ""
 
 
+class Medicine(models.Model):
+    _name = 'medicine'
+
+    name = fields.Char()
+    price = fields.Float()
+
+
 class CaseRequest(models.Model):
     _name = 'case.request'
 
-    case_id = fields.Many2one('res.partner', domain=[('is_case','=',True)])
+    case_id = fields.Many2one('res.partner', required=1, domain=[('is_case', '=', True)])
+    priority = fields.Selection([
+        ('0', 'Normal'),
+        ('1', 'Important'),
+    ], default='0', index=True, string="Starred", tracking=True)
 
     basic_service = fields.Many2one('basic.service')
-    description = fields.Text(related='basic_service.description')
-
+    description = fields.Text()
+    medicine = fields.Many2one('medicine')
+    show_medicine = fields.Boolean(related='basic_service.medicine')
     complaint = fields.Text()
 
-    state = fields.Selection([
-        ('new', 'طلب جديد'),
-        ('collected', 'تم تجميع البيانات الأساسية'),
-        ('directed', 'تم التوجيه'),
-        ('done', 'تم الحصول على الخدمة')], default='new')
+    # state = fields.Selection([
+    #     ('new', 'طلب جديد'),
+    #     ('collected', 'تم تجميع البيانات الأساسية'),
+    #     ('directed', 'تم التوجيه'),
+    #     ('done', 'تم الحصول على الخدمة'),
+    #     ('follow_up', 'متابعة شهرية'),
+    # ], default='new', group_expand='_group_expand_states')
+    #
+    #
+    # def _group_expand_states(self, states, domain, order):
+    #     # return [key for key, val in type(self).state.selection]
+    #     return ['new', 'collected', 'directed', 'done', 'follow_up']
+
+    status = fields.Many2one('request.state', string="Status")
+
+    kanban_state = fields.Selection([
+        ('done', 'In Progress'),
+        ('blocked', 'On Hold')], string='Progress',
+        copy=False, default='done', required=True)
+
+    monthly_follow_up = fields.One2many('monthly.follow.up', 'request_id')
+
+    show_monthly = fields.Boolean(related='status.monthly')
+    show_monthly2 = fields.Boolean(related='basic_service.monthly')
 
 
 class BasicService(models.Model):
     _name = 'basic.service'
 
     name = fields.Char(required=1)
+    medicine = fields.Boolean()
+    monthly = fields.Boolean()
     description = fields.Text()
 
 
+class RequestState(models.Model):
+    _name = 'request.state'
+
+    name = fields.Char()
+    description = fields.Text()
+    monthly = fields.Boolean()
+
+
+class MonthlyFollowUp(models.Model):
+    _name = 'monthly.follow.up'
+
+    request_id = fields.Many2one('case.request')
+    date = fields.Date()
+    status = fields.Selection([('in_process', 'In Process'), ('done', 'Done'), ('problem', 'Problem') ],
+                             string='status', default='in_process')
+    # month = fields.Selection([(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'),
+    #                           (5, 'May'), (6, 'June'), (7, 'July'), (8, 'August'),
+    #                           (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December'), ],
+    #                          string='Month', )
+    # year = fields.Selection(get_years(), string='Year', default=datetime.now().year)
+    # medicine = fields.Many2one('medicine')

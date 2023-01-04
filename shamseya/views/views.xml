@@ -72,7 +72,7 @@
                             </group>
                             <group>
                                 <field name="income_resource"/>
-                                <field name="pension_type" />
+                                <field name="pension_type"/>
                                 <field name="currency_id"/>
                                 <field name="average_income" widget="monetary"/>
                                 <field name="has_insurance"/>
@@ -209,7 +209,7 @@
             </field>
         </record>
 
-        <!--        general partner custom search view -->
+        <!--        general case custom search view -->
         <record id="view_res_partner_filter_modified" model="ir.ui.view">
             <field name="name">res.partner.select.modified</field>
             <field name="model">res.partner</field>
@@ -262,7 +262,7 @@
                 action="shamseya.action_case"
                 sequence="0"/>
 
-
+        ------------------------------------------------------------------------
         <record id="view_users_form_inherit" model="ir.ui.view">
             <field name="name">res.users.form.inherit</field>
             <field name="model">res.users</field>
@@ -274,7 +274,7 @@
                 </xpath>
             </field>
         </record>
-
+        ------------------------------------------------------------------------
         <record id="view_request_tree" model="ir.ui.view">
             <field name="name">view.request.tree</field>
             <field name="model">case.request</field>
@@ -282,7 +282,7 @@
                 <tree string="Contacts" sample="0" multi_edit="1" create="1">
                     <field name="case_id"/>
                     <field name="basic_service"/>
-                    <field name="state"/>
+                    <field name="status"/>
                 </tree>
             </field>
         </record>
@@ -292,26 +292,75 @@
             <field name="model">case.request</field>
             <field name="arch" type="xml">
                 <form>
+                    <header>
+                        <field id="status" name="status" widget="statusbar"
+                               options="{'clickable': '1'}" readonly="0"/>
+                    </header>
                     <sheet>
-                        <header>
-                            <field id="state" name="state" widget="statusbar"
-                                   statusbar_visible="new,collected,directed,done"
-                                   options="{'clickable': '1'}" readonly="0"
-                            />
-                        </header>
                         <group>
-                            <field name="case_id"
-                                   context="{'default_is_case':'True','form_view_ref':'shamseya.view_case_form'}"/>
-                            <field name="basic_service"/>
-                            <field name="description"/>
-                            <field name="complaint"/>
-                            <field name="create_uid"/>
-                            <field name="create_date" readonly="1"/>
+                            <group>
+                                <field name="case_id"
+                                       context="{'default_is_case':'True','form_view_ref':'shamseya.view_case_form'}"/>
+                                <field name="complaint"/>
+                                <field name="basic_service"/>
+                                <field name="description"/>
+                                <field name="show_medicine" invisible="1"/>
+                                <field name="show_monthly" invisible="1"/>
+                                <field name="show_monthly2" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="create_uid"/>
+                                <field name="create_date" readonly="1"/>
+                                <field name="medicine" attrs="{'invisible': [('show_medicine', '!=', True)]}"/>
+                            </group>
                         </group>
-                        <notebook>
 
+                        <notebook attrs="{'invisible': ['|','|',('show_monthly', '!=', True),('show_monthly2', '!=', True),('show_medicine', '!=', True)]}">
+                            <page name="monthly_follow_up" string="Monthly Follow-Up">
+                                <group>
+                                    <field name="monthly_follow_up" widget="section_and_note_one2many" mode="tree,kanban" nolabel="1">
+                                        <kanban sample="1">
+                                            <templates>
+                                                <t t-name="kanban-box">
+                                                    <div class="o_kanban_content oe_kanban_global_click">
+                                                        <div class="o_kanban_record_title">
+                                                            <field name="date"/>
+                                                        </div>
+                                                        <field name="status"/>
+                                                    </div>
+                                                </t>
+                                            </templates>
+                                        </kanban>
+                                        <tree editable="1">
+                                            <field name="date"/>
+                                            <field name="status"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
                         </notebook>
                     </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="quick_create_request_form" model="ir.ui.view">
+            <field name="name">case.request</field>
+            <field name="model">case.request</field>
+            <field name="priority">1000</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="case_id"
+                               context="{'default_is_case':'True','form_view_ref':'shamseya.view_case_form'}"/>
+                        <field name="complaint"/>
+                        <field name="basic_service"/>
+                        <field name="description"/>
+                        <field name="show_medicine" invisible="1"/>
+                        <field name="medicine" attrs="{'invisible': [('show_medicine', '!=', True)]}"/>
+                        <field name="create_uid"/>
+                        <field name="create_date" readonly="1"/>
+                    </group>
                 </form>
             </field>
         </record>
@@ -320,17 +369,21 @@
             <field name="name">view.request.kanban</field>
             <field name="model">case.request</field>
             <field name="arch" type="xml">
-                <kanban class="o_res_partner_kanban" sample="1" create="0">
+                <kanban default_group_by="status" class="o_kanban_small_column o_kanban_project_tasks"
+                        on_create="quick_create"
+                        quick_create_view="shamseya.quick_create_request_form" examples="project"
+                        js_class="project_task_kanban" sample="1">
+                    <field name="status" options='{"group_by_tooltip": {"description": "Description"}}'/>
+                    <progressbar field="kanban_state" colors='{"done": "success", "blocked": "danger"}'/>
                     <field name="id"/>
-<!--                    <progressbar field="state" colors="{&quot;done&quot;: &quot;success&quot;, &quot;blocked&quot;: &quot;danger&quot;}"/>-->
                     <field name="case_id"/>
+                    <field name="priority"/>
                     <field name="basic_service"/>
                     <field name="description"/>
                     <field name="complaint"/>
                     <templates>
                         <t t-name="kanban-box">
-                            <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban">
-
+                            <div class="oe_kanban_global_click o_kanban_record_has_image_fill">
                                 <div class="o_kanban_image_fill_left o_kanban_image_full"
                                      t-attf-style="background-image: url(#{kanban_image('res.partner', 'avatar_128', record.case_id.raw_value)})"
                                      role="img"/>
@@ -339,6 +392,20 @@
                                         <field name="case_id"/>
                                     </strong>
                                     <field name="basic_service"/>
+                                    <field name="show_medicine" invisible="1"/>
+                                    <field name="medicine" attrs="{'invisible': [('show_medicine', '!=', True)]}"/>
+                                </div>
+                                <div class="oe_kanban_top_left">
+                                    <field name="kanban_state" widget="state_selection" groups="base.group_user"
+                                           invisible="context.get('fsm_mode', False)"/>
+                                </div>
+                                <div class="oe_kanban_content position-absolute fixed-bottom mr-2">
+                                    <div class="o_kanban_record_bottom">
+                                        <div class="oe_kanban_bottom_left"/>
+                                        <div class="oe_kanban_bottom_right">
+                                            <field name="priority" widget="priority"/>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </t>
@@ -365,7 +432,7 @@
         <record id="action_request" model="ir.actions.act_window">
             <field name="name">Request</field>
             <field name="res_model">case.request</field>
-            <field name="view_mode">tree,form,kanban</field>
+            <field name="view_mode">kanban,tree,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     Create a new Request
@@ -523,6 +590,42 @@
                 action="shamseya.action_basic_service"
                 sequence="5"/>
 
+        <record id="action_request_state" model="ir.actions.act_window">
+            <field name="name">Request State</field>
+            <field name="res_model">request.state</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Request State
+                </p>
+            </field>
+        </record>
 
+        <menuitem
+                id="menu_request_state"
+                name="Request States"
+                parent="menu_config"
+                groups=""
+                action="shamseya.action_request_state"
+                sequence="6"/>
+
+        <record id="action_medicine" model="ir.actions.act_window">
+            <field name="name">Medicine</field>
+            <field name="res_model">medicine</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Request Medicine
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_medicine"
+                name="Medicine"
+                parent="menu_config"
+                groups=""
+                action="shamseya.action_medicine"
+                sequence="8"/>
     </data>
 </odoo>
