@@ -370,7 +370,7 @@
             <field name="model">case.request</field>
             <field name="arch" type="xml">
                 <kanban default_group_by="status" class="o_kanban_small_column o_kanban_project_tasks"
-                        on_create="quick_create"
+                        on_create="quick_create" group_create="0"
                         quick_create_view="shamseya.quick_create_request_form" examples="project"
                         js_class="project_task_kanban" sample="1">
                     <field name="status" options='{"group_by_tooltip": {"description": "Description"}}'/>
