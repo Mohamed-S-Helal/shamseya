@@ -60,7 +60,7 @@
                                 </div>
                                 <field name="create_date" readonly="1"/>
                                 <field name="create_uid" string="Owner"/>
-<!--                                <field name="created_by"/>-->
+                                <field name="created_by"/>
                                 <field name="referral"/>
                                 <field name="is_case" invisible="1"/>
                             </group>
@@ -327,7 +327,7 @@
                             </group>
                             <group>
                                 <field name="create_uid" string="Owner"/>
-<!--                                <field name="created_by"/>-->
+                                <field name="created_by"/>
                                 <field name="create_date" readonly="1"/>
                                 <field name="medicine" attrs="{'invisible': [('show_medicine', '!=', True)]}"/>
                             </group>

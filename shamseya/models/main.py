@@ -12,8 +12,8 @@ class Case(models.Model):
     name = fields.Char(required=1)
     code = fields.Char(readonly=0)
     is_case = fields.Boolean()
-    # created_by = fields.Many2one('res.partner', default=lambda self: self.create_uid.partner_id,
-    #                              domain="[('is_case', '=', False)]")
+    created_by = fields.Many2one('res.partner', default=lambda self: self.create_uid.partner_id,
+                                 domain="[('is_case', '=', False)]")
 
     date_of_birth = fields.Date(string='Date of Birth')
 
@@ -55,7 +55,6 @@ class Case(models.Model):
         if not self.area.state_id:
             self.area.state_id = self.state_id
 
-    # request_ids = fields.One2many('plusone.case', 'patient_id', string='Request History')
     create_uid = fields.Many2one('res.users', string='Created By', readonly=0)
     referral = fields.Many2one('referral', string='Refered By')
     income_resource = fields.Many2one('income.resource', string="Family Income Resource")
@@ -132,8 +131,8 @@ class CaseRequest(models.Model):
     def onchange_area(self):
         self.case_id.is_case = True
 
-    # created_by = fields.Many2one('res.partner', default=lambda self: self.create_uid.partner_id,
-    #                              domain="[('is_case', '=', False)]")
+    created_by = fields.Many2one('res.partner', default=lambda self: self.create_uid.partner_id,
+                                 domain="[('is_case', '=', False)]")
     priority = fields.Selection([
         ('0', 'Normal'),
         ('1', 'Important'),
