@@ -46,10 +46,15 @@ class Case(models.Model):
                                  default=lambda self: self.env.user.country_id)
     area = fields.Many2one('area', domain="[('state_id', '=?', state_id)]")
 
+    @api.onchange('area')
+    def onchange_area(self):
+        if not self.area.state_id:
+            self.area.state_id = self.state_id
+
     # request_ids = fields.One2many('plusone.case', 'patient_id', string='Request History')
     create_uid = fields.Many2one('res.users', string='Created By', readonly=0)
     referral = fields.Many2one('referral', string='Refered By')
-    income_resource = fields.Many2one('income.resource')
+    income_resource = fields.Many2one('income.resource', string="Family Income Resource")
     pension_type = fields.Many2one('pension.type')
     currency_id = fields.Many2one('res.currency', related='country_id.currency_id')
     average_income = fields.Monetary('Average Income', currency_field='currency_id')

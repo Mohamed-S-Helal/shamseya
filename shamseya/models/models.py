@@ -24,6 +24,12 @@ class Area(models.Model):
     name = fields.Char(required=1)
     country_id = fields.Many2one('res.country', default=lambda self: self.env.user.country_id)
     state_id = fields.Many2one('res.country.state', domain="[('country_id', '=?', country_id)]")
+    partner_ids = fields.One2many('res.partner', 'area')
+
+    @api.model
+    def create(self,vals):
+        print(self.env.context)
+        return super().create(vals)
 
 
 class Referral(models.Model):

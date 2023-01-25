@@ -45,13 +45,13 @@
                             </h2>
                         </div>
                         <group col="6">
-                            <group colspan="2">
+                            <group string="General Info" colspan="2">
                                 <span class="o_form_label o_td_label" name="address_name">
                                     Address
                                 </span>
                                 <div class="o_address_format">
                                     <field name="country_id" placeholder="Country" class="o_address_country"
-                                           options='{"no_open": True, "no_create": True}'
+                                           options='{"no_open": True, "no_create": True}' invisible="1"
                                     />
                                     <field name="state_id" class="o_address_country" placeholder="State"
                                            options="{'no_open': True, 'no_quick_create': True}"
@@ -63,17 +63,17 @@
                                 <field name="referral"/>
                                 <field name="is_case" invisible="1"/>
                             </group>
-                            <group colspan="2">
+                            <group string="Personal Info" colspan="2">
                                 <field name="phone" widget="phone"/>
                                 <field name="gender"/>
                                 <field name="date_of_birth"/>
                                 <field name="age" readonly="1"/>
                                 <field name="marital_status"/>
                             </group>
-                            <group>
+                            <group string="Social Info">
                                 <field name="income_resource"/>
                                 <field name="pension_type"/>
-                                <field name="currency_id"/>
+                                <field name="currency_id" invisible="1"/>
                                 <field name="average_income" widget="monetary"/>
                                 <field name="has_insurance"/>
                                 <field name="insurance_type" attrs="{'invisible': [('has_insurance', '=', False)]}"/>
@@ -496,7 +496,7 @@
                 sequence="1"/>
 
         <record id="action_income_resource" model="ir.actions.act_window">
-            <field name="name">Income Resource</field>
+            <field name="name">Family Income Resource</field>
             <field name="res_model">income.resource</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
@@ -508,7 +508,7 @@
 
         <menuitem
                 id="menu_income_resource"
-                name="Income Resources"
+                name="Family Income Resources"
                 parent="menu_config"
                 groups=""
                 action="shamseya.action_income_resource"
