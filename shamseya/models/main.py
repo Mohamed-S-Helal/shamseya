@@ -132,8 +132,8 @@ class CaseRequest(models.Model):
     def onchange_area(self):
         self.case_id.is_case = True
 
-    created_by = fields.Many2one('res.partner', default=lambda self: self.create_uid.partner_id,
-                                 domain="[('is_case', '=', False)]")
+    # created_by = fields.Many2one('res.partner', default=lambda self: self.create_uid.partner_id,
+    #                              domain="[('is_case', '=', False)]")
     priority = fields.Selection([
         ('0', 'Normal'),
         ('1', 'Important'),
