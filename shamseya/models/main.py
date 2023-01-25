@@ -12,8 +12,8 @@ class Case(models.Model):
     name = fields.Char(required=1)
     code = fields.Char(readonly=0)
     is_case = fields.Boolean()
-    created_by = fields.Many2one('res.partner', default=lambda self: self.create_uid.partner_id,
-                                 domain="[('is_case', '=', False)]")
+    # created_by = fields.Many2one('res.partner', default=lambda self: self.create_uid.partner_id,
+    #                              domain="[('is_case', '=', False)]")
 
     date_of_birth = fields.Date(string='Date of Birth')
 
