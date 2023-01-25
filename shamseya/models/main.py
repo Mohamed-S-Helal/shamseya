@@ -11,7 +11,10 @@ class Case(models.Model):
 
     name = fields.Char(required=1)
     code = fields.Char(readonly=0)
-    is_case = fields.Boolean(string='Is Patient?')
+    is_case = fields.Boolean()
+    created_by = fields.Many2one('res.partner', default=lambda self: self.create_uid.partner_id,
+                                 domain="[('is_case', '=', False)]")
+
     date_of_birth = fields.Date(string='Date of Birth')
 
     # compute age from date of birth
@@ -37,7 +40,8 @@ class Case(models.Model):
         ('married', 'متزوج/ـة'),
         ('divorced', 'مطلق/ـة'),
         ('widow', 'أرمل/ـة'),
-        ('abandoned', 'هجر')
+        ('abandoned', 'هجر'),
+        ('under_age', 'تحت السن'),
     ], string='Marital Status')
 
     state_id = fields.Many2one("res.country.state", string='State', ondelete='restrict',
@@ -58,14 +62,22 @@ class Case(models.Model):
     pension_type = fields.Many2one('pension.type')
     currency_id = fields.Many2one('res.currency', related='country_id.currency_id')
     average_income = fields.Monetary('Average Income', currency_field='currency_id')
-    has_insurance = fields.Boolean()
-    insurance_type = fields.Many2one('insurance.type')
-    insurance_code = fields.Char()
+    has_health_insurance = fields.Boolean()
+    health_insurance_type = fields.Many2one('health.insurance.type')
+
+    social_insurance_type = fields.Many2one('social.insurance.type')
+    know_social_insurance_code = fields.Boolean(string="Social Insurance Code")
+    social_insurance_code = fields.Integer()
+    mother_name = fields.Char()
+    personal_id_number = fields.Integer()
 
     personal_id_card = fields.Many2many('ir.attachment', 'personal_id_card_rel')
     insurance_card = fields.Many2many('ir.attachment', 'insurance_card_rel')
     health_card = fields.Many2many('ir.attachment', 'health_card_rel')
     other_attachments = fields.Many2many('ir.attachment', 'other_attachments_rel')
+
+    health_coverage = fields.Boolean()
+    health_coverage_type = fields.Many2one('health.coverage')
 
     requests = fields.One2many('case.request', 'case_id')
 
@@ -115,6 +127,13 @@ class CaseRequest(models.Model):
     _name = 'case.request'
 
     case_id = fields.Many2one('res.partner', required=1, domain=[('is_case', '=', True)])
+
+    @api.onchange('case_id')
+    def onchange_area(self):
+        self.case_id.is_case = True
+
+    created_by = fields.Many2one('res.partner', default=lambda self: self.create_uid.partner_id,
+                                 domain="[('is_case', '=', False)]")
     priority = fields.Selection([
         ('0', 'Normal'),
         ('1', 'Important'),

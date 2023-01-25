@@ -59,7 +59,8 @@
                                     <field name="area" placeholder="Area..." class="o_address_street"/>
                                 </div>
                                 <field name="create_date" readonly="1"/>
-                                <field name="create_uid"/>
+                                <field name="create_uid" string="Owner"/>
+                                <field name="created_by"/>
                                 <field name="referral"/>
                                 <field name="is_case" invisible="1"/>
                             </group>
@@ -70,14 +71,30 @@
                                 <field name="age" readonly="1"/>
                                 <field name="marital_status"/>
                             </group>
-                            <group string="Social Info">
+                            <group string="Social Info" colspan="2">
                                 <field name="income_resource"/>
                                 <field name="pension_type"/>
                                 <field name="currency_id" invisible="1"/>
                                 <field name="average_income" widget="monetary"/>
-                                <field name="has_insurance"/>
-                                <field name="insurance_type" attrs="{'invisible': [('has_insurance', '=', False)]}"/>
-                                <field name="insurance_code" attrs="{'invisible': [('has_insurance', '=', False)]}"/>
+
+                                <label for="has_health_insurance"/>
+                                <div class="o_row">
+                                    <field name="has_health_insurance"/><field name="health_insurance_type" attrs="{'invisible': [('has_health_insurance', '=', False)]}" placeholder="Type"/>
+                                </div>
+
+                                <label for="know_social_insurance_code"/>
+                                <div class="o_row">
+                                    <field name="know_social_insurance_code"/><field name="social_insurance_code" attrs="{'invisible': [('know_social_insurance_code', '=', False)]}" placeholder="Code"/>
+                                </div>
+
+                                <field name="social_insurance_type" attrs="{'invisible': [('know_social_insurance_code', '=', False)]}"/>
+                                <field name="personal_id_number" attrs="{'invisible': [('know_social_insurance_code', '=', False)]}"/>
+                                <field name="mother_name" attrs="{'invisible': [('know_social_insurance_code', '=', False)]}"/>
+
+                                <label for="health_coverage"/>
+                                <div class="o_row">
+                                    <field name="health_coverage"/><field name="health_coverage_type" attrs="{'invisible': [('health_coverage', '=', False)]}" placeholder="Type"/>
+                                </div>
 
                             </group>
                         </group>
@@ -102,7 +119,7 @@
                                     <group colspan="1">
                                         <label for="personal_id_card"/>
                                     </group>
-                                    <group colspan="1" attrs="{'invisible': [('has_insurance', '=', False)]}">
+                                    <group colspan="1" attrs="{'invisible': [('has_health_insurance', '=', False)]}">
                                         <label for="insurance_card"/>
                                     </group>
                                     <group colspan="1">
@@ -117,7 +134,7 @@
                                         <field name="personal_id_card"
                                                widget="many2many_binary" nolabel="1"/>
                                     </group>
-                                    <group colspan="1" attrs="{'invisible': [('has_insurance', '=', False)]}">
+                                    <group colspan="1" attrs="{'invisible': [('has_health_insurance', '=', False)]}">
                                         <field name="insurance_card"
                                                widget="many2many_binary" nolabel="1"/>
                                     </group>
@@ -309,16 +326,19 @@
                                 <field name="show_monthly2" invisible="1"/>
                             </group>
                             <group>
-                                <field name="create_uid"/>
+                                <field name="create_uid" string="Owner"/>
+                                <field name="created_by"/>
                                 <field name="create_date" readonly="1"/>
                                 <field name="medicine" attrs="{'invisible': [('show_medicine', '!=', True)]}"/>
                             </group>
                         </group>
 
-                        <notebook attrs="{'invisible': ['|','|',('show_monthly', '!=', True),('show_monthly2', '!=', True),('show_medicine', '!=', True)]}">
+                        <notebook
+                                attrs="{'invisible': ['|','|',('show_monthly', '!=', True),('show_monthly2', '!=', True),('show_medicine', '!=', True)]}">
                             <page name="monthly_follow_up" string="Monthly Follow-Up">
                                 <group>
-                                    <field name="monthly_follow_up" widget="section_and_note_one2many" mode="tree,kanban" nolabel="1">
+                                    <field name="monthly_follow_up" widget="section_and_note_one2many"
+                                           mode="tree,kanban" nolabel="1">
                                         <kanban sample="1">
                                             <templates>
                                                 <t t-name="kanban-box">
@@ -533,9 +553,9 @@
                 action="shamseya.action_pension_type"
                 sequence="3"/>
 
-        <record id="action_insurance_type" model="ir.actions.act_window">
-            <field name="name">Insurance Type</field>
-            <field name="res_model">insurance.type</field>
+        <record id="action_health_insurance_type" model="ir.actions.act_window">
+            <field name="name">Health Insurance Type</field>
+            <field name="res_model">health.insurance.type</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
@@ -545,11 +565,30 @@
         </record>
 
         <menuitem
-                id="menu_insurance_type"
-                name="Insurance Types"
+                id="menu_health_insurance_type"
+                name="Health Insurance Types"
                 parent="menu_config"
                 groups=""
-                action="shamseya.action_insurance_type"
+                action="shamseya.action_health_insurance_type"
+                sequence="4"/>
+
+        <record id="action_social_insurance_type" model="ir.actions.act_window">
+            <field name="name">Social Insurance Type</field>
+            <field name="res_model">social.insurance.type</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Insurance Type
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_social_insurance_type"
+                name="Social Insurance Types"
+                parent="menu_config"
+                groups=""
+                action="shamseya.action_social_insurance_type"
                 sequence="4"/>
 
         <record id="action_diagnosis" model="ir.actions.act_window">
@@ -579,7 +618,8 @@
                     <group>
                         <field name="name"/>
                         <field name="medicine"/>
-                        <field name="monthly" string=" " widget="radio" options="{'horizontal': true}" attrs="{'invisible': [('medicine', '=', False)]}"/>
+                        <field name="monthly" string=" " widget="radio" options="{'horizontal': true}"
+                               attrs="{'invisible': [('medicine', '=', False)]}"/>
                         <field name="description"/>
                     </group>
                 </form>
@@ -643,17 +683,27 @@
                 action="shamseya.action_medicine"
                 sequence="8"/>
 
-        <record id="action_medicine" model="ir.actions.act_window">
-            <field name="name">Medicine</field>
-            <field name="res_model">medicine</field>
+        <record id="action_health_coverage" model="ir.actions.act_window">
+            <field name="name">Health Coverage</field>
+            <field name="res_model">health.coverage</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Create a new Request Medicine
+                    Create a new Health Coverage
                 </p>
             </field>
         </record>
 
+        <menuitem
+                id="menu_health_coverage"
+                name="Health Coverage"
+                parent="menu_config"
+                groups=""
+                action="shamseya.action_health_coverage"
+                sequence="9"/>
+
+--------------------------------------------------------------------------------
+<!--        Hospital-->
         <record id="hospital_view_tree" model="ir.ui.view">
             <field name="name">hospital_view_tree</field>
             <field name="model">hospital</field>

@@ -50,15 +50,20 @@ class PensionType(models.Model):
     name = fields.Char(required=1)
 
 
-class InsuranceType(models.Model):
-    _name = 'insurance.type'
-
+class HealthInsuranceType(models.Model):
+    _name = 'health.insurance.type'
     name = fields.Char(required=1)
+    partner_ids = fields.One2many('res.partner', 'health_insurance_type')
+
+
+class SocialInsuranceType(models.Model):
+    _name = 'social.insurance.type'
+    name = fields.Char(required=1)
+    partner_ids = fields.One2many('res.partner', 'social_insurance_type')
 
 
 class Diagnosis(models.Model):
     _name = 'diagnosis'
-
     name = fields.Char(required=1)
 
 
@@ -87,6 +92,11 @@ class MedicalHistoryLine(models.Model):
                 rec.duration = f"{r.years} years, {r.months} months"
             else:
                 rec.duration = ""
+
+
+class Medicine(models.Model):
+    _name = 'health.coverage'
+    name = fields.Char()
 
 
 class Medicine(models.Model):
