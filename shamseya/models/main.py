@@ -148,4 +148,4 @@ class CaseRequest(models.Model):
     monthly_follow_up = fields.One2many('monthly.follow.up', 'request_id')
 
     show_monthly = fields.Boolean(related='status.monthly')
-    show_monthly2 = fields.Boolean(related='basic_service.monthly')
+    show_monthly2 = fields.Selection(related='basic_service.monthly')

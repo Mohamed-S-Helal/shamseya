@@ -11,5 +11,9 @@ access_basic_service,basic_service,model_basic_service,,1,1,1,1
 access_request_state,request_state,model_request_state,,1,1,1,1
 access_medicine,medicine,model_medicine,,1,1,1,1
 access_monthly_follow_up,monthly_follow_up,model_monthly_follow_up,,1,1,1,1
+access_specialization,specialization,model_specialization,,1,1,1,1
+access_hospital,hospital,model_hospital,,1,1,1,1
+access_working_hours,working_hours,model_working_hours,,1,1,1,1
+access_emergency,emergency,model_emergency,,1,1,1,1
 
 

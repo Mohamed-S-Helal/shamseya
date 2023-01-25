@@ -571,6 +571,21 @@
                 action="shamseya.action_diagnosis"
                 sequence="5"/>
 
+        <record id="view_basic_service_form" model="ir.ui.view">
+            <field name="name">basic.service</field>
+            <field name="model">basic.service</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="name"/>
+                        <field name="medicine"/>
+                        <field name="monthly" string=" " widget="radio" options="{'horizontal': true}" attrs="{'invisible': [('medicine', '=', False)]}"/>
+                        <field name="description"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
         <record id="action_basic_service" model="ir.actions.act_window">
             <field name="name">Basic Service</field>
             <field name="res_model">basic.service</field>
@@ -627,5 +642,122 @@
                 groups=""
                 action="shamseya.action_medicine"
                 sequence="8"/>
+
+        <record id="action_medicine" model="ir.actions.act_window">
+            <field name="name">Medicine</field>
+            <field name="res_model">medicine</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Request Medicine
+                </p>
+            </field>
+        </record>
+
+        <record id="hospital_view_tree" model="ir.ui.view">
+            <field name="name">hospital_view_tree</field>
+            <field name="model">hospital</field>
+            <field name="arch" type="xml">
+                <tree string="Hospitals">
+                    <field name="name"/>
+                    <field name="state_id"/>
+                    <field name="area"/>
+                    <field name="phone"/>
+                    <field name="address"/>
+                    <field name="specializations" widget="many2many_tags"/>
+                    <field name="working_hours"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="price" widget="monetary"/>
+                    <field name="emergency"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_hospitals" model="ir.actions.act_window">
+            <field name="name">Hospitals</field>
+            <field name="res_model">hospital</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Hospital
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="hospitals_main"
+                name="Hospitals"
+                parent="menu_shamseya_root"
+                groups=""
+                sequence="3"/>
+
+        <record id="hospitals_action" model="ir.actions.act_window">
+            <field name="name">Hospitals</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hospital</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem
+                id="hospitals"
+                name="Hospitals"
+                parent="hospitals_main"
+                action="hospitals_action"
+                groups=""
+                sequence="0"/>
+
+        <menuitem
+                id="hospitals_config"
+                name="Configurations"
+                parent="hospitals_main"
+                groups=""
+                sequence="1"/>
+
+        <record id="specializations_action" model="ir.actions.act_window">
+            <field name="name">Specializations</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">specialization</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem
+                id="specializations"
+                name="Specializations"
+                parent="hospitals_config"
+                action="specializations_action"
+                groups=""
+                sequence="1"/>
+
+        <record id="working_hours_action" model="ir.actions.act_window">
+            <field name="name">Working Hours</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">working.hours</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem
+                id="working_hours"
+                name="Working Hours"
+                parent="hospitals_config"
+                action="working_hours_action"
+                groups=""
+                sequence="2"/>
+
+        <record id="emergency_action" model="ir.actions.act_window">
+            <field name="name">Emergency</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">emergency</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem
+                id="emergency"
+                name="Emergency"
+                parent="hospitals_config"
+                action="emergency_action"
+                groups=""
+                sequence="3"/>
+
+
     </data>
 </odoo>
