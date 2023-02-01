@@ -114,14 +114,16 @@ class BasicService(models.Model):
     type = fields.Selection([
         ('insurance_request', _('Insurance Request')),
         ('examination', _('Examination')),
-        ('medicine', _('Medicine')),
+        ('medicine_once', _('Medicine One Time')),
+        ('medicine_monthly', _('Medicine Monthly')),
         ('operation', _('Operation')),
         ('inquiry', _('Inquiry')),
-    ], default='medicine')
-    monthly = fields.Selection([
-        ('one_time', 'One Time'),
-        ('monthly', 'Monthly'),
-    ], default='one_time')
+        ('other', _('Other')),
+    ], default='insurance_request')
+    # monthly = fields.Selection([
+    #     ('one_time', 'One Time'),
+    #     ('monthly', 'Monthly'),
+    # ], default='one_time')
     description = fields.Text()
 
 

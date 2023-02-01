@@ -2,6 +2,7 @@
 from datetime import datetime
 
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 from dateutil.relativedelta import relativedelta
 
 
@@ -160,6 +161,12 @@ class CaseRequest(models.Model):
 
     status = fields.Many2one('request.state', string="Status", group_expand='_read_group_status_ids')
 
+    @api.onchange('status')
+    def onchange_status(self):
+
+        if self.status.monthly and not self.service_type != 'medicine_monthly':
+            raise UserError('Monthly Follow Up is only available for "Medicine Monthly" service')
+
     @api.model
     def _read_group_status_ids(self, stages, domain, order):
         return self.env['request.state'].search([], order=order)
@@ -172,6 +179,6 @@ class CaseRequest(models.Model):
     monthly_follow_up = fields.One2many('monthly.follow.up', 'request_id')
 
     show_status_monthly = fields.Boolean(related='status.monthly')
-    show_service_monthly = fields.Selection(related='basic_service.monthly')
+    # show_service_monthly = fields.Selection(related='basic_service.monthly')
     service_type = fields.Selection(related='basic_service.type')
 
