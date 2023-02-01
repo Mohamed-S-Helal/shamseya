@@ -116,7 +116,7 @@
                                 <group>
                                     <field name="medical_history_lines" nolabel="1"
                                            widget="one2many_list">
-                                        <tree editable="1">
+                                        <tree multi_edit="1" editable="1">
                                             <field name="diagnosis"/>
                                             <field name="start_date"/>
                                             <field name="duration"/>
@@ -163,7 +163,7 @@
                                 <group>
                                     <field name="requests" readonly="1" nolabel="1"
                                            widget="one2many_list">
-                                        <tree>
+                                        <tree multi_edit="1">
                                             <field name="case_id"/>
                                             <field name="basic_service"/>
                                             <field name="complaint"/>
@@ -367,7 +367,7 @@
                                                 </t>
                                             </templates>
                                         </kanban>
-                                        <tree editable="1">
+                                        <tree multi_edit="1" editable="1">
                                             <field name="date"/>
                                             <field name="status"/>
                                         </tree>
@@ -679,6 +679,17 @@
             </field>
         </record>
 
+        <record id="request_state_view_tree" model="ir.ui.view">
+            <field name="name">request_state_view_tree</field>
+            <field name="model">request.state</field>
+            <field name="arch" type="xml">
+                <tree multi_edit="1" string="request_state_tree">
+                    <field name="name"/>
+                    <field name="order_"/>
+                </tree>
+            </field>
+        </record>
+
         <menuitem
                 id="menu_request_state"
                 name="Request States"
@@ -731,7 +742,7 @@
             <field name="name">hospital_view_tree</field>
             <field name="model">hospital</field>
             <field name="arch" type="xml">
-                <tree string="Hospitals">
+                <tree multi_edit="1" string="Hospitals">
                     <field name="name"/>
                     <field name="state_id"/>
                     <field name="area"/>
