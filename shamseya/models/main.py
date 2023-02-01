@@ -163,8 +163,10 @@ class CaseRequest(models.Model):
 
     @api.onchange('status')
     def onchange_status(self):
-
-        if self.status.monthly and not self.service_type != 'medicine_monthly':
+        # print(self.service_type)
+        # print(self.status.name)
+        # print(self.status.monthly)
+        if self.status.monthly and self.service_type != 'medicine_monthly':
             raise UserError('Monthly Follow Up is only available for "Medicine Monthly" service')
 
     @api.model
