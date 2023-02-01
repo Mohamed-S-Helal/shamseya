@@ -334,18 +334,24 @@
                             <group>
                                 <field name="case_id"
                                        context="{'default_is_case':'True','form_view_ref':'shamseya.view_case_form'}"/>
-                                <field name="complaint"/>
-                                <field name="basic_service"/>
-                                <field name="description"/>
-                                <field name="service_type" invisible="1"/>
-                                <field name="show_status_monthly" invisible="1"/>
-<!--                                <field name="show_service_monthly" invisible="1"/>-->
-                            </group>
-                            <group>
                                 <field name="create_uid" string="Owner"/>
                                 <field name="created_by"/>
                                 <field name="create_date" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="complaint"/>
+                                <field name="basic_service"/>
+<!--                                <field name="description"/>-->
+                                <field name="service_type" invisible="1"/>
+                                <field name="show_status_monthly" invisible="1"/>
+<!--                                <field name="show_service_monthly" invisible="1"/>-->
                                 <field name="medicine" attrs="{'invisible': [('service_type', 'not in', ['medicine_once','medicine_monthly'])]}"/>
+                                <field name="health_coverage"
+                                       attrs="{'invisible': [('service_type', 'not in', ['insurance_request'])]}"/>
+                                <field name="health_insurance"
+                                       attrs="{'invisible': ['|',('service_type', 'not in', ['insurance_request']),('health_coverage', 'not in', ['1'])]}"/>
+                                <field name="initiative"
+                                       attrs="{'invisible': ['|',('service_type', 'not in', ['insurance_request']),('health_coverage', 'not in', ['3'])]}"/>
                             </group>
                         </group>
 

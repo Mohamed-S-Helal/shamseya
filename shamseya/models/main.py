@@ -161,12 +161,9 @@ class CaseRequest(models.Model):
 
     status = fields.Many2one('request.state', string="Status", group_expand='_read_group_status_ids')
 
-    @api.onchange('status')
+    @api.onchange('status','basic_service')
     def onchange_status(self):
-        # print(self.service_type)
-        # print(self.status.name)
-        # print(self.status.monthly)
-        if self.status.monthly and self.service_type != 'medicine_monthly':
+        if self.status.monthly and self.basic_service.type != 'medicine_monthly':
             raise UserError('Monthly Follow Up is only available for "Medicine Monthly" service')
 
     @api.model
@@ -183,4 +180,31 @@ class CaseRequest(models.Model):
     show_status_monthly = fields.Boolean(related='status.monthly')
     # show_service_monthly = fields.Selection(related='basic_service.monthly')
     service_type = fields.Selection(related='basic_service.type')
+
+    health_coverage = fields.Selection([
+        ('1', 'تأمين صحي'),
+        ('2', 'علاج على نفقة الدولة'),
+        ('3', 'مبادرات وحملات رئاسية'),
+        ('4', 'تأمين صحي شامل'),
+        ('5', 'تأمين صحي لطلبة الجامعات'),
+        ('6', 'كارت خدمات متكاملة'),
+    ], default='1', string='نوع التغطية الصحية المستحقة')
+
+    health_insurance = fields.Selection([
+        ('1', 'تأمين صحي للمواليد'),
+        ('2', 'تأمين صحي لطلبة المدارس'),
+        ('3', 'تأمين صحي للموظفين'),
+        ('4', 'تأمين صحي للمعاشات'),
+        ('5', 'تأمين صحي للأرامل'),
+        ('6', 'تأمين صحي للمرأة المعيلة'),
+        ('7', 'تأمين صحي للفلاحين'),
+        ('6', 'تأمين صحي للعمالة غير المنتظمة'),
+    ], default='1', string='نوع التأمين الصحي')
+
+    initiative = fields.Selection([
+        ('1', 'مبادرة علاج غير القادرين'),
+        ('2', 'مبادرة صحة المرأة'),
+        ('3', 'مبادرة 100 مليون صحة'),
+        ('4', 'أخرى'),
+    ], default='1', string='نوع المبادرة')
 
