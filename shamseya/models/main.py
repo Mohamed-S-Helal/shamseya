@@ -6,7 +6,8 @@ from dateutil.relativedelta import relativedelta
 
 
 class Case(models.Model):
-    _inherit = 'res.partner'
+    _name = 'res.partner'
+    _inherit = ['res.partner', 'mail.thread', 'mail.activity.mixin']
     _description = 'Cases'
 
     name = fields.Char(required=1)
@@ -124,6 +125,7 @@ class Case(models.Model):
 
 class CaseRequest(models.Model):
     _name = 'case.request'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     case_id = fields.Many2one('res.partner', required=1, domain=[('is_case', '=', True)])
 
@@ -141,7 +143,6 @@ class CaseRequest(models.Model):
     basic_service = fields.Many2one('basic.service')
     description = fields.Text()
     medicine = fields.Many2one('medicine')
-    show_medicine = fields.Boolean(related='basic_service.medicine')
     complaint = fields.Text()
 
     # state = fields.Selection([
@@ -170,5 +171,7 @@ class CaseRequest(models.Model):
 
     monthly_follow_up = fields.One2many('monthly.follow.up', 'request_id')
 
-    show_monthly = fields.Boolean(related='status.monthly')
-    show_monthly2 = fields.Selection(related='basic_service.monthly')
+    show_status_monthly = fields.Boolean(related='status.monthly')
+    show_service_monthly = fields.Selection(related='basic_service.monthly')
+    service_type = fields.Selection(related='basic_service.type')
+

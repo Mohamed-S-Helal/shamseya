@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from dateutil.relativedelta import relativedelta
 
 
@@ -94,7 +94,7 @@ class MedicalHistoryLine(models.Model):
                 rec.duration = ""
 
 
-class Medicine(models.Model):
+class HealthCoverage(models.Model):
     _name = 'health.coverage'
     name = fields.Char()
 
@@ -111,19 +111,28 @@ class BasicService(models.Model):
 
     name = fields.Char(required=1)
     medicine = fields.Boolean()
+    type = fields.Selection([
+        ('insurance_request', _('Insurance Request')),
+        ('examination', _('Examination')),
+        ('medicine', _('Medicine')),
+        ('operation', _('Operation')),
+        ('inquiry', _('Inquiry')),
+    ], default='medicine')
     monthly = fields.Selection([
         ('one_time', 'One Time'),
         ('monthly', 'Monthly'),
-    ], default='no')
+    ], default='one_time')
     description = fields.Text()
 
 
 class RequestState(models.Model):
     _name = 'request.state'
+    _order = "order_ asc"
 
     name = fields.Char()
     description = fields.Text()
     monthly = fields.Boolean()
+    order_ = fields.Char()
 
 
 class MonthlyFollowUp(models.Model):
