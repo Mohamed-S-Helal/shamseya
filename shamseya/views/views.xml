@@ -47,7 +47,7 @@
                                        placeholder="Last Name"/>
                                 <field id="individual" class="text-break" name="name2" default_focus="1"
                                        placeholder="Middle Name"/>
-                                <field id="individual" class="text-break" name="name" default_focus="1"
+                                <field id="individual" class="text-break" name="name1" default_focus="1"
                                        placeholder="First Name"/>
                             </h1>
                             <h2>

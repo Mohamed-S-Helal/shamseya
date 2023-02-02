@@ -11,9 +11,30 @@ class Case(models.Model):
     _inherit = ['res.partner', 'mail.thread', 'mail.activity.mixin']
     _description = 'Cases'
 
-    name = fields.Char(required=1, string="First Name")
+    name = fields.Char(compute='set_name', store=1, inverse='split_name')
+
+    name1 = fields.Char(required=1, string="First Name")
     name2 = fields.Char(required=1, string="Middle Name")
     name3 = fields.Char(required=1, string="Last Name")
+
+    @api.depends('name1', 'name2', 'name3')
+    def set_name(self):
+        for rec in self:
+            rec.name = (f'{rec.name1}' if rec.name1 else '_new') + (f' {rec.name2}' if rec.name2 else '') + (
+                f' {rec.name3}' if rec.name3 else '')
+
+    def split_name(self):
+        for rec in self:
+            ns = rec.name.split(' ')
+            rec.name1 = ns[0]
+            if len(ns)>1:
+                rec.name3 = ns[-1]
+            if len(ns)>2:
+                rec.name2 = ' '.join(ns[1:-1])
+
+
+
+
     code = fields.Char(readonly=0)
     is_case = fields.Boolean()
     created_by = fields.Many2one('res.partner', default=lambda self: self.create_uid.partner_id,
@@ -121,15 +142,6 @@ class Case(models.Model):
             'target': 'self'
         }
         return action
-
-    @api.model
-    @api.depends('name','name2','name3')
-    def name_get(self):
-        res = []
-        for rec in self:
-            name = rec.name + (f' {rec.name2}' if rec.name2 else 0) +
-            res.append((rec.id, name))
-        return res
 
     @api.model
     def create(self, vals):
