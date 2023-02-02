@@ -16,23 +16,23 @@ class Case(models.Model):
     name2 = fields.Char(required=1, string="Middle Name")
     name3 = fields.Char(required=1, string="Last Name")
     
-#     name = fields.Char(compute='set_name', store=1, inverse='split_name')
+    name = fields.Char(compute='set_name', store=1, inverse='split_name')
     
     
-#     @api.depends('name1', 'name2', 'name3')
-#     def set_name(self):
-#         for rec in self:
-#             rec.name = (f'{rec.name1}' if rec.name1 else '_new') + (f' {rec.name2}' if rec.name2 else '') + (
-#                 f' {rec.name3}' if rec.name3 else '')
+    @api.depends('name1', 'name2', 'name3')
+    def set_name(self):
+        for rec in self:
+            rec.name = (f'{rec.name1}' if rec.name1 else '_new') + (f' {rec.name2}' if rec.name2 else '') + (
+                f' {rec.name3}' if rec.name3 else '')
 
-#     def split_name(self):
-#         for rec in self:
-#             ns = rec.name.split(' ')
-#             rec.name1 = ns[0]
-#             if len(ns)>1:
-#                 rec.name3 = ns[-1]
-#             if len(ns)>2:
-#                 rec.name2 = ' '.join(ns[1:-1])
+    def split_name(self):
+        for rec in self:
+            ns = rec.name.split(' ')
+            rec.name1 = ns[0]
+            if len(ns)>1:
+                rec.name3 = ns[-1]
+            if len(ns)>2:
+                rec.name2 = ' '.join(ns[1:-1])
 
 
 
