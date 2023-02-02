@@ -11,7 +11,9 @@ class Case(models.Model):
     _inherit = ['res.partner', 'mail.thread', 'mail.activity.mixin']
     _description = 'Cases'
 
-    name = fields.Char(required=1)
+    name = fields.Char(required=1, string="First Name")
+    name2 = fields.Char(required=1, string="Middle Name")
+    name3 = fields.Char(required=1, string="Last Name")
     code = fields.Char(readonly=0)
     is_case = fields.Boolean()
     created_by = fields.Many2one('res.partner', default=lambda self: self.create_uid.partner_id,
@@ -21,6 +23,11 @@ class Case(models.Model):
 
     # compute age from date of birth
     age = fields.Integer(string='Age', compute="compute_age", store=1)
+
+    @api.onchange('phone')
+    def onchange_phone(self):
+        if self.phone and (not self.phone.isdigit() or not self.phone.startswith('01') or len(self.phone)!=11):
+            raise UserError('Wrong phone format: phone must be 11 digits in the format 01xxxxxxxxx')
 
     @api.depends('date_of_birth')
     def compute_age(self):
@@ -114,6 +121,15 @@ class Case(models.Model):
             'target': 'self'
         }
         return action
+
+    @api.model
+    @api.depends('name','name2','name3')
+    def name_get(self):
+        res = []
+        for rec in self:
+            name = rec.name + (f' {rec.name2}' if rec.name2 else 0) +
+            res.append((rec.id, name))
+        return res
 
     @api.model
     def create(self, vals):
