@@ -11,11 +11,13 @@ class Case(models.Model):
     _inherit = ['res.partner', 'mail.thread', 'mail.activity.mixin']
     _description = 'Cases'
 
-#     name = fields.Char(compute='set_name', store=1, inverse='split_name')
 
     name1 = fields.Char(required=1, string="First Name")
     name2 = fields.Char(required=1, string="Middle Name")
     name3 = fields.Char(required=1, string="Last Name")
+    
+#     name = fields.Char(compute='set_name', store=1, inverse='split_name')
+    
     
 #     @api.depends('name1', 'name2', 'name3')
 #     def set_name(self):
