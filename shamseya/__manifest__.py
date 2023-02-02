@@ -3,6 +3,7 @@
     'name': "Shamseya",
 
     'summary': """
+    El Nase7
         """,
 
     'description': """
