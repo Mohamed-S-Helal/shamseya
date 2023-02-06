@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
 
 from odoo import models, fields, api
 from odoo.exceptions import UserError
@@ -11,14 +10,12 @@ class Case(models.Model):
     _inherit = ['res.partner', 'mail.thread', 'mail.activity.mixin']
     _description = 'Cases'
 
-
     name1 = fields.Char(required=1, string="First Name")
     name2 = fields.Char(required=1, string="Middle Name")
     name3 = fields.Char(required=1, string="Last Name")
     
     name = fields.Char(compute='set_name', store=1, inverse='split_name')
-    
-    
+
     @api.depends('name1', 'name2', 'name3')
     def set_name(self):
         for rec in self:
@@ -33,9 +30,6 @@ class Case(models.Model):
                 rec.name3 = ns[-1]
             if len(ns)>2:
                 rec.name2 = ' '.join(ns[1:-1])
-
-
-
 
     code = fields.Char(readonly=0)
     is_case = fields.Boolean()
@@ -175,19 +169,6 @@ class CaseRequest(models.Model):
     description = fields.Text()
     medicine = fields.Many2one('medicine')
     complaint = fields.Text()
-
-    # state = fields.Selection([
-    #     ('new', 'طلب جديد'),
-    #     ('collected', 'تم تجميع البيانات الأساسية'),
-    #     ('directed', 'تم التوجيه'),
-    #     ('done', 'تم الحصول على الخدمة'),
-    #     ('follow_up', 'متابعة شهرية'),
-    # ], default='new', group_expand='_group_expand_states')
-    #
-    #
-    # def _group_expand_states(self, states, domain, order):
-    #     # return [key for key, val in type(self).state.selection]
-    #     return ['new', 'collected', 'directed', 'done', 'follow_up']
 
     status = fields.Many2one('request.state', string="Status", group_expand='_read_group_status_ids')
 
