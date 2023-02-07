@@ -94,9 +94,9 @@ class MedicalHistoryLine(models.Model):
                 rec.duration = ""
 
 
-class HealthCoverage(models.Model):
-    _name = 'health.coverage'
-    name = fields.Char()
+# class HealthCoverage(models.Model):
+#     _name = 'health.coverage'
+#     name = fields.Char()
 
 
 class Medicine(models.Model):

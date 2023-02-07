@@ -6,7 +6,6 @@ access_pension_type,pension_type,model_pension_type,,1,1,1,1
 access_health_insurance_type,health_insurance_type,model_health_insurance_type,,1,1,1,1
 access_social_insurance_type,social_insurance_type,model_social_insurance_type,,1,1,1,1
 access_diagnosis,diagnosis,model_diagnosis,,1,1,1,1
-access_health_coverage,health_coverage,model_health_coverage,,1,1,1,1
 access_medical_history_line,medical_history_line,model_medical_history_line,,1,1,1,1
 access_case_request,case_request,model_case_request,,1,1,1,1
 access_basic_service,basic_service,model_basic_service,,1,1,1,1

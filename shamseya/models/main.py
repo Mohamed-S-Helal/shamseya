@@ -102,7 +102,15 @@ class Case(models.Model):
     other_attachments = fields.Many2many('ir.attachment', 'other_attachments_rel')
 
     health_coverage = fields.Boolean()
-    health_coverage_type = fields.Many2one('health.coverage')
+    # health_coverage_type = fields.Many2one('health.coverage')
+    health_coverage_type = fields.Selection([
+        ('1', 'تأمين صحي'),
+        ('2', 'علاج على نفقة الدولة'),
+        ('3', 'مبادرات وحملات رئاسية'),
+        ('4', 'تأمين صحي شامل'),
+        ('5', 'تأمين صحي لطلبة الجامعات'),
+        ('6', 'كارت خدمات متكاملة'),
+    ], default='1', string='نوع التغطية الصحية')
 
     requests = fields.One2many('case.request', 'case_id')
 

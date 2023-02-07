@@ -114,7 +114,7 @@
                                 <div class="o_row">
                                     <field name="health_coverage"/>
                                     <field name="health_coverage_type"
-                                           attrs="{'invisible': [('health_coverage', '=', False)]}" placeholder="Type"/>
+                                           attrs="{'invisible': [('health_coverage', '=', False)]}"/>
                                 </div>
 
                             </group>
@@ -735,24 +735,24 @@
                 action="shamseya.action_medicine"
                 sequence="8"/>
 
-        <record id="action_health_coverage" model="ir.actions.act_window">
-            <field name="name">Health Coverage</field>
-            <field name="res_model">health.coverage</field>
-            <field name="view_mode">tree,form</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Create a new Health Coverage
-                </p>
-            </field>
-        </record>
+<!--        <record id="action_health_coverage" model="ir.actions.act_window">-->
+<!--            <field name="name">Health Coverage</field>-->
+<!--            <field name="res_model">health.coverage</field>-->
+<!--            <field name="view_mode">tree,form</field>-->
+<!--            <field name="help" type="html">-->
+<!--                <p class="o_view_nocontent_smiling_face">-->
+<!--                    Create a new Health Coverage-->
+<!--                </p>-->
+<!--            </field>-->
+<!--        </record>-->
 
-        <menuitem
-                id="menu_health_coverage"
-                name="Health Coverage"
-                parent="menu_config"
-                groups=""
-                action="shamseya.action_health_coverage"
-                sequence="9"/>
+<!--        <menuitem-->
+<!--                id="menu_health_coverage"-->
+<!--                name="Health Coverage"-->
+<!--                parent="menu_config"-->
+<!--                groups=""-->
+<!--                action="shamseya.action_health_coverage"-->
+<!--                sequence="9"/>-->
 
         --------------------------------------------------------------------------------
         <!--        Hospital-->
