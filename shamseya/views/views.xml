@@ -695,8 +695,8 @@
             <field name="model">request.state</field>
             <field name="arch" type="xml">
                 <tree editable="bottom" string="request_state_tree">
+                    <field name="order_" string="Order" widget="handle"/>
                     <field name="name"/>
-                    <field name="order_"/>
                     <field name="monthly"/>
                     <field name="description"/>
                 </tree>

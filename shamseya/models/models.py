@@ -134,7 +134,7 @@ class RequestState(models.Model):
     name = fields.Char()
     description = fields.Text()
     monthly = fields.Boolean()
-    order_ = fields.Char()
+    order_ = fields.Integer()
 
 
 class MonthlyFollowUp(models.Model):
