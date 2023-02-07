@@ -78,7 +78,13 @@
                                 <field name="phone" widget="phone" placeholder="01xxxxxxxxx"/>
                                 <field name="gender"/>
                                 <field name="date_of_birth"/>
-                                <field name="age" readonly="1"/>
+                                <label for="age"/>
+                                <div class="o_row">
+                                    <field name="age" readonly="1"/>
+                                    years
+                                    <field name="age_m" readonly="1"/>
+                                    months
+                                </div>
                                 <field name="marital_status"/>
                             </group>
                             <group string="Social Info" colspan="2">

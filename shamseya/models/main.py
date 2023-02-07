@@ -40,20 +40,27 @@ class Case(models.Model):
 
     # compute age from date of birth
     age = fields.Integer(string='Age', compute="compute_age", store=1)
+    age_m = fields.Integer(string='Age', compute="compute_age", store=1)
+
+    @api.depends('date_of_birth')
+    def compute_age(self):
+        for rec in self:
+            today = fields.Date.today()
+            age_y = 0
+            age_m = 0
+            if rec.date_of_birth and rec.date_of_birth < today:
+                age = relativedelta(today, rec.date_of_birth)
+                age_y = age.years
+                age_m = age.months
+            rec.age = age_y
+            rec.age_m = age_m
 
     @api.onchange('phone')
     def onchange_phone(self):
         if self.phone and (not self.phone.isdigit() or not self.phone.startswith('01') or len(self.phone)!=11):
             raise UserError('Wrong phone format: phone must be 11 digits in the format 01xxxxxxxxx')
 
-    @api.depends('date_of_birth')
-    def compute_age(self):
-        for rec in self:
-            today = fields.Date.today()
-            age = 0
-            if rec.date_of_birth and rec.date_of_birth <= today:
-                age = relativedelta(today, rec.date_of_birth).years
-            rec.age = age
+
 
     gender = fields.Selection([
         ('male', 'Male'),
