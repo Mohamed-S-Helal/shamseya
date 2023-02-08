@@ -27,7 +27,7 @@ class Area(models.Model):
     partner_ids = fields.One2many('res.partner', 'area')
 
     @api.model
-    def create(self,vals):
+    def create(self, vals):
         print(self.env.context)
         return super().create(vals)
 
@@ -94,16 +94,28 @@ class MedicalHistoryLine(models.Model):
                 rec.duration = ""
 
 
-# class HealthCoverage(models.Model):
-#     _name = 'health.coverage'
-#     name = fields.Char()
-
-
 class Medicine(models.Model):
     _name = 'medicine'
 
     name = fields.Char()
     price = fields.Float()
+    types = fields.Many2many('medicine.type', relation='medicine_type_rel')
+    requests = fields.Many2many(comodel_name='case.request', relation='request_medicine_rel', readonly=1)
+
+
+class MedicineType(models.Model):
+    _name = 'medicine.type'
+
+    name = fields.Char()
+    medicines = fields.Many2many('medicine', relation='medicine_type_rel')
+
+
+class RequestOperation(models.Model):
+    _name = 'service.operation'
+
+    name = fields.Char()
+    price = fields.Float()
+    requests = fields.One2many(comodel_name='case.request', inverse_name='operation', readonly=1)
 
 
 class BasicService(models.Model):
@@ -134,6 +146,11 @@ class RequestState(models.Model):
     name = fields.Char()
     description = fields.Text()
     monthly = fields.Boolean()
+    type = fields.Selection([
+        ('monthly', _('Monthly')),
+        ('problem', _('Problem')),
+        ('other', _('Other')),
+    ], default='other')
     order_ = fields.Integer()
 
 
@@ -141,15 +158,32 @@ class MonthlyFollowUp(models.Model):
     _name = 'monthly.follow.up'
 
     request_id = fields.Many2one('case.request')
+    name = fields.Char(related='request_id.name')
     date = fields.Date()
-    status = fields.Selection([('in_process', 'In Process'), ('done', 'Done'), ('problem', 'Problem') ],
-                             string='status', default='in_process')
+    m_status = fields.Selection([('in_process', 'In Process'), ('done', 'Done'), ('problem', 'Problem')],
+                                string='Status', default='in_process')
     # month = fields.Selection([(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'),
     #                           (5, 'May'), (6, 'June'), (7, 'July'), (8, 'August'),
     #                           (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December'), ],
     #                          string='Month', )
     # year = fields.Selection(get_years(), string='Year', default=datetime.now().year)
     # medicine = fields.Many2one('medicine')
+    issues = fields.One2many('follow.up.issue', 'follow_up_id')
+
+    def open_issue(self):
+        [action] = self.env.ref('shamseya.issue_action').read()
+
+        if action:
+            action['domain'] = [('follow_up_id', '=', self.id)]
+            action['context'] = {'default_follow_up_id': self.id}
+            return action
+
+
+class FollowUpIssue(models.Model):
+    _name = 'follow.up.issue'
+
+    name = fields.Char(required=False)
+    follow_up_id = fields.Many2one('monthly.follow.up')
 
 
 class Specialization(models.Model):
@@ -172,7 +206,7 @@ class Hospital(models.Model):
 
     name = fields.Char(required=1)
 
-    country_id = fields.Many2one('res.country', default=lambda self:self.env.user.country_id)
+    country_id = fields.Many2one('res.country', default=lambda self: self.env.user.country_id)
 
     # state_id = fields.Many2one("res.country.state", string='State', ondelete='restrict',
     #                            domain="[('country_id', '=?', country_id)]")

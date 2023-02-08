@@ -55,12 +55,17 @@ class Case(models.Model):
             rec.age = age_y
             rec.age_m = age_m
 
+    phone2 = fields.Char(string='Second Phone')
+
     @api.onchange('phone')
     def onchange_phone(self):
         if self.phone and (not self.phone.isdigit() or not self.phone.startswith('01') or len(self.phone)!=11):
             raise UserError('Wrong phone format: phone must be 11 digits in the format 01xxxxxxxxx')
 
-
+    @api.onchange('phone2')
+    def onchange_phone2(self):
+        if self.phone2 and (not self.phone2.isdigit() or not self.phone2.startswith('01') or len(self.phone2) != 11):
+            raise UserError('Wrong phone format: phone must be 11 digits in the format 01xxxxxxxxx')
 
     gender = fields.Selection([
         ('male', 'Male'),
@@ -168,6 +173,7 @@ class CaseRequest(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
     case_id = fields.Many2one('res.partner', required=1, domain=[('is_case', '=', True)])
+    name = fields.Char(related='case_id.name', store=1, readonly=1)
 
     @api.onchange('case_id')
     def onchange_area(self):
@@ -182,14 +188,40 @@ class CaseRequest(models.Model):
 
     basic_service = fields.Many2one('basic.service')
     description = fields.Text()
-    medicine = fields.Many2one('medicine')
+    medicine_type = fields.Many2many('medicine.type', relation='request_type_rel')
+    medicine = fields.Many2many('medicine', relation='request_medicine_rel')
+    operation = fields.Many2one('service.operation')
+    monthly_follow_up = fields.One2many('monthly.follow.up', 'request_id')
+
+    currency_id = fields.Many2one('res.currency', related='case_id.currency_id')
+    cost = fields.Monetary(currency_field='currency_id', compute='_compute_cost', store=1)
+
+    @api.depends('operation', 'medicine', 'monthly_follow_up', 'basic_service')
+    def _compute_cost(self):
+        for rec in self:
+            service = rec.basic_service.type
+            if service == 'operation':
+                rec.cost = rec.operation.price
+            elif service == 'medicine_once':
+                rec.cost = sum(rec.medicine.mapped('price'))
+            elif service == 'medicine_monthly':
+                rec.cost = sum(rec.medicine.mapped('price')) * len(rec.monthly_follow_up)
+            else:
+                rec.cost = 0
+
+    @api.onchange('medicine_type')
+    def onchange_medicine_type(self):
+        medicines = self.medicine_type.mapped('medicines').ids
+        self.medicine = [(6, 0, medicines)]
+        return {'domain': {'medicine': [('id', 'in', medicines)]}}
+
     complaint = fields.Text()
 
     status = fields.Many2one('request.state', string="Status", group_expand='_read_group_status_ids')
 
     @api.onchange('status','basic_service')
     def onchange_status(self):
-        if self.status.monthly and self.basic_service.type != 'medicine_monthly':
+        if self.status.type == 'monthly' and self.basic_service.type != 'medicine_monthly':
             raise UserError('Monthly Follow Up is only available for "Medicine Monthly" service')
 
     @api.model
@@ -201,9 +233,6 @@ class CaseRequest(models.Model):
         ('blocked', 'On Hold')], string='Progress',
         copy=False, default='done', required=True)
 
-    monthly_follow_up = fields.One2many('monthly.follow.up', 'request_id')
-
-    show_status_monthly = fields.Boolean(related='status.monthly')
     # show_service_monthly = fields.Selection(related='basic_service.monthly')
     service_type = fields.Selection(related='basic_service.type')
 

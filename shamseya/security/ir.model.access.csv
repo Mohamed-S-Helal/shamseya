@@ -11,10 +11,11 @@ access_case_request,case_request,model_case_request,,1,1,1,1
 access_basic_service,basic_service,model_basic_service,,1,1,1,1
 access_request_state,request_state,model_request_state,,1,1,1,1
 access_medicine,medicine,model_medicine,,1,1,1,1
+access_medicine_type,medicine_type,model_medicine_type,,1,1,1,1
+access_service_operation,service_operation,model_service_operation,,1,1,1,1
 access_monthly_follow_up,monthly_follow_up,model_monthly_follow_up,,1,1,1,1
 access_specialization,specialization,model_specialization,,1,1,1,1
 access_hospital,hospital,model_hospital,,1,1,1,1
 access_working_hours,working_hours,model_working_hours,,1,1,1,1
 access_emergency,emergency,model_emergency,,1,1,1,1
-
-
+access_follow_up_issue,follow_up_issue,model_follow_up_issue,,1,1,1,1

@@ -76,6 +76,7 @@
                             </group>
                             <group string="Personal Info" colspan="2">
                                 <field name="phone" widget="phone" placeholder="01xxxxxxxxx"/>
+                                <field name="phone2" widget="phone" placeholder="01xxxxxxxxx"/>
                                 <field name="gender"/>
                                 <field name="date_of_birth"/>
                                 <label for="age"/>
@@ -357,11 +358,15 @@
                             <group>
                                 <field name="complaint"/>
                                 <field name="basic_service"/>
-<!--                                <field name="description"/>-->
                                 <field name="service_type" invisible="1"/>
-                                <field name="show_status_monthly" invisible="1"/>
-<!--                                <field name="show_service_monthly" invisible="1"/>-->
-                                <field name="medicine" attrs="{'invisible': [('service_type', 'not in', ['medicine_once','medicine_monthly'])]}"/>
+                                <field name="medicine_type" widget="many2many_tags"
+                                       attrs="{'invisible': [('service_type', 'not in', ['medicine_once','medicine_monthly'])]}"/>
+                                <field name="medicine" widget="many2many_tags"
+                                       attrs="{'invisible': [('service_type', 'not in', ['medicine_once','medicine_monthly'])]}"/>
+                                <field name="operation"
+                                       attrs="{'invisible': [('service_type', 'not in', ['operation'])]}"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="cost"/>
                                 <field name="health_coverage"
                                        attrs="{'invisible': [('service_type', 'not in', ['insurance_request'])]}"/>
                                 <field name="health_insurance"
@@ -372,26 +377,29 @@
                         </group>
 
                         <notebook
-                                attrs="{'invisible': [('show_status_monthly', '=', False)]}">
+                                attrs="{'invisible': [('service_type', '!=', 'medicine_monthly')]}">
                             <page name="monthly_follow_up" string="Monthly Follow-Up">
                                 <group>
-                                    <field name="monthly_follow_up" widget="section_and_note_one2many"
-                                           mode="tree,kanban" nolabel="1">
-                                        <kanban sample="1">
-                                            <templates>
-                                                <t t-name="kanban-box">
-                                                    <div class="o_kanban_content oe_kanban_global_click">
-                                                        <div class="o_kanban_record_title">
-                                                            <field name="date"/>
-                                                        </div>
-                                                        <field name="status"/>
-                                                    </div>
-                                                </t>
-                                            </templates>
-                                        </kanban>
+                                    <field name="monthly_follow_up"
+                                           mode="tree" nolabel="1">
+<!--                                        <kanban sample="1">-->
+<!--                                            <templates>-->
+<!--                                                <t t-name="kanban-box">-->
+<!--                                                    <div class="o_kanban_content oe_kanban_global_click">-->
+<!--                                                        <div class="o_kanban_record_title">-->
+<!--                                                            <field name="date"/>-->
+<!--                                                        </div>-->
+<!--                                                        <field name="status" widget="radio" options="{'horizontal': True}"/>-->
+<!--                                                    </div>-->
+<!--                                                </t>-->
+<!--                                            </templates>-->
+<!--                                        </kanban>-->
                                         <tree multi_edit="1" editable="1">
                                             <field name="date"/>
-                                            <field name="status"/>
+                                            <field name="m_status"/>
+                                            <button string="Open Issue"
+                                                    attrs="{'invisible': [('m_status', '!=', 'problem')]}"
+                                                    name="open_issue" type="object" class="btn btn-success"/>
                                         </tree>
                                     </field>
                                 </group>
@@ -663,8 +671,6 @@
                         <field name="name"/>
                         <!--                        <field name="medicine"/>-->
                         <field name="type" widget="radio"/>
-<!--                        <field name="monthly" string=" " widget="radio" options="{'horizontal': true}"-->
-<!--                               attrs="{'invisible': [('type', '!=', 'medicine')]}"/>-->
                         <field name="description"/>
                     </group>
                 </form>
@@ -697,7 +703,7 @@
                 <tree editable="bottom" string="request_state_tree">
                     <field name="order_" string="Order" widget="handle"/>
                     <field name="name"/>
-                    <field name="monthly"/>
+                    <field name="type"/>
                     <field name="description"/>
                 </tree>
             </field>
@@ -722,8 +728,24 @@
                 action="shamseya.action_request_state"
                 sequence="6"/>
 
+        <record id="medicine_view_form" model="ir.ui.view">
+            <field name="name">medicine_view_form</field>
+            <field name="model">medicine</field>
+            <field name="arch" type="xml">
+                <form string="medicine_form">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="price"/>
+                            <field name="types" widget="many2many_tags"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
         <record id="action_medicine" model="ir.actions.act_window">
-            <field name="name">Medicine</field>
+            <field name="name">Medicines</field>
             <field name="res_model">medicine</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
@@ -735,11 +757,49 @@
 
         <menuitem
                 id="menu_medicine"
-                name="Medicine"
+                name="Medicines"
                 parent="menu_config"
                 groups=""
                 action="shamseya.action_medicine"
                 sequence="8"/>
+
+        <record id="action_medicine_type" model="ir.actions.act_window">
+            <field name="name">Medicine Types</field>
+            <field name="res_model">medicine.type</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Request Medicine Type
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_medicine_type"
+                name="Medicine Types"
+                parent="menu_config"
+                groups=""
+                action="shamseya.action_medicine_type"
+                sequence="9"/>
+
+        <record id="action_operations" model="ir.actions.act_window">
+            <field name="name">Operations</field>
+            <field name="res_model">service.operation</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new Operation
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_operations"
+                name="Operations"
+                parent="menu_config"
+                groups=""
+                action="shamseya.action_operations"
+                sequence="10"/>
 
 <!--        <record id="action_health_coverage" model="ir.actions.act_window">-->
 <!--            <field name="name">Health Coverage</field>-->
@@ -865,6 +925,23 @@
                 action="emergency_action"
                 groups=""
                 sequence="3"/>
+
+        ---------------------------------
+
+        <record id="issue_action" model="ir.actions.act_window">
+            <field name="name">Issues</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">follow.up.issue</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem
+                id="issues_menu"
+                name="Issues"
+                parent="menu_shamseya_root"
+                groups=""
+                action="issue_action"
+                sequence="4"/>
 
 
     </data>
