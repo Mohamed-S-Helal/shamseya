@@ -19,3 +19,5 @@ access_hospital,hospital,model_hospital,,1,1,1,1
 access_working_hours,working_hours,model_working_hours,,1,1,1,1
 access_emergency,emergency,model_emergency,,1,1,1,1
 access_follow_up_issue,follow_up_issue,model_follow_up_issue,,1,1,1,1
+access_case_document,case_document,model_case_document,,1,1,1,1
+

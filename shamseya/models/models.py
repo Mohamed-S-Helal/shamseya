@@ -143,6 +143,8 @@ class RequestState(models.Model):
     _name = 'request.state'
     _order = "order_ asc"
 
+    order_ = fields.Integer()
+
     name = fields.Char()
     description = fields.Text()
     monthly = fields.Boolean()
@@ -151,7 +153,7 @@ class RequestState(models.Model):
         ('problem', _('Problem')),
         ('other', _('Other')),
     ], default='other')
-    order_ = fields.Integer()
+
 
 
 class MonthlyFollowUp(models.Model):
@@ -223,3 +225,11 @@ class Hospital(models.Model):
     currency_id = fields.Many2one('res.currency', related='country_id.currency_id')
     price = fields.Monetary(currency_field='currency_id')
     emergency = fields.Many2one('emergency')
+
+
+class CaseDocument(models.Model):
+    _name = 'case.document'
+
+    name = fields.Char(required=1)
+
+    document = fields.Html()

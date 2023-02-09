@@ -943,6 +943,42 @@
                 action="issue_action"
                 sequence="4"/>
 
+        -------------------------------------------------------------
+
+        <record id="document_view_form" model="ir.ui.view">
+            <field name="name">document_view_form</field>
+            <field name="model">case.document</field>
+            <field name="arch" type="xml">
+                <form string="document_form">
+                    <sheet>
+                        <group>
+                            <div dir="rtl" style="text-align: right">
+                                <h1><field name="name"/></h1>
+                                <br/>
+                                <field name="document"/>
+                            </div>
+
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="documents_action" model="ir.actions.act_window">
+            <field name="name">Documents</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">case.document</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem
+                id="documents_menu"
+                name="Documents"
+                parent="menu_shamseya_root"
+                groups=""
+                action="documents_action"
+                sequence="5"/>
+
 
     </data>
 </odoo>
