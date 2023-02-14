@@ -262,4 +262,3 @@ class CaseRequest(models.Model):
         ('3', 'مبادرة 100 مليون صحة'),
         ('4', 'أخرى'),
     ], default='1', string='نوع المبادرة')
-

@@ -155,7 +155,6 @@ class RequestState(models.Model):
     ], default='other')
 
 
-
 class MonthlyFollowUp(models.Model):
     _name = 'monthly.follow.up'
 
@@ -164,6 +163,7 @@ class MonthlyFollowUp(models.Model):
     date = fields.Date()
     m_status = fields.Selection([('in_process', 'In Process'), ('done', 'Done'), ('problem', 'Problem')],
                                 string='Status', default='in_process')
+
     # month = fields.Selection([(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'),
     #                           (5, 'May'), (6, 'June'), (7, 'July'), (8, 'August'),
     #                           (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December'), ],
@@ -177,15 +177,40 @@ class MonthlyFollowUp(models.Model):
 
         if action:
             action['domain'] = [('follow_up_id', '=', self.id)]
-            action['context'] = {'default_follow_up_id': self.id}
+            action['context'] = {
+                'default_follow_up_id': self.id,
+                'default_issuer': self.request_id.case_id.id,
+                'default_personal_id_number': self.request_id.case_id.personal_id_number,}
+            # action['view_mode'] = 'tree,form'
+            # action['views'] = [(k, v) for k, v in action['views'] if v in ['tree', 'form']]
             return action
 
 
 class FollowUpIssue(models.Model):
     _name = 'follow.up.issue'
 
-    name = fields.Char(required=False)
+    name = fields.Char(required=True, string="رقم الشكوى")
+    reason = fields.Text(string="سبب الشكوى")
+    date = fields.Date(string="تاريخ تقديم الشكوى", default=fields.Date.context_today)
     follow_up_id = fields.Many2one('monthly.follow.up')
+    issuer = fields.Many2one('res.partner', domain=[('is_case', '=', True)], default=lambda self:self.follow_up_id.request_id.case_id)
+    personal_id_number = fields.Integer(string="رقم بطاقة مقدم الشكوى")
+
+    kanban_state = fields.Selection([
+        ('done', 'In Progress'),
+        ('blocked', 'On Hold')], string='Progress',
+        copy=False, default='done', required=True)
+
+    priority = fields.Selection([
+        ('0', 'Normal'),
+        ('1', 'Important'),
+    ], default='0', index=True, string="Starred", tracking=True)
+
+    m_status = fields.Selection([('open', 'Open'), ('close', 'Closed')], group_expand='_group_expand_states',
+                                string='Status', default='open')
+
+    def _group_expand_states(self, states, domain, order):
+        return [key for key, val in type(self).m_status.selection]
 
 
 class Specialization(models.Model):
