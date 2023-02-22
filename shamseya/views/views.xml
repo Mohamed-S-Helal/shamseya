@@ -348,6 +348,12 @@
                                options="{'clickable': '1'}" readonly="0"/>
                     </header>
                     <sheet>
+                        <div name="div1" class="oe_button_box">
+                            <button id="action_view_issues" class="oe_stat_button" type="object" name="open_issues"
+                                    icon="fa-list">
+                                <field string="Issues" name="issues_count" widget="statinfo"/>
+                            </button>
+                        </div>
                         <group>
                             <group>
                                 <field name="case_id"

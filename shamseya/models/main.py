@@ -279,14 +279,20 @@ class CaseRequest(models.Model):
         ('4', 'أخرى'),
     ], default='1', string='نوع المبادرة')
 
-    # @api.model
-    # def create(self, vals):
-    #     states = self.env['request.state'].search([]).sorted('order_')
-    #     if states:
-    #         vals.update(status=states[0].id)
-    #     print(states)
-    #     print(vals)
-    #     return super().create(vals)
+    issues = fields.One2many('follow.up.issue', 'request_id')
+
+    issues_count = fields.Integer(compute='_compute_issues_count', string='Issues Count')
+
+    def _compute_issues_count(self):
+        for rec in self:
+            rec.issues_count = len(rec.issues)
+
+    def open_issues(self):
+        self.ensure_one()
+        action = self.env['ir.actions.act_window']._for_xml_id('shamseya.issue_action')
+        action['domain'] = [('request_id', '=', self.id)]
+        # action['context'] = {'search_default_case_id': 'asas'}
+        return action
 
 
 class MonthlyFollowUp(models.Model):
