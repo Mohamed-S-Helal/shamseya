@@ -42,13 +42,18 @@
                             <!--                                           attrs="{'invisible': [('has_health_insurance', '=', False)]}"-->
                             <!--                                           placeholder="Type"/>-->
                             <!--                                </div>-->
-                            <h1 class="o_row">
-                                <field id="individual" class="text-break" name="name3" default_focus="1"
-                                       placeholder="Last Name"/>
-                                <field id="individual" class="text-break" name="name2" default_focus="1"
-                                       placeholder="Middle Name"/>
+                            <h1 class="oe_read_only">
+                                <field name="name"/>
+                            </h1>
+                            <h1 class="oe_edit_only">
                                 <field id="individual" class="text-break" name="name1" default_focus="1"
                                        placeholder="First Name"/>
+                                <field id="individual" class="text-break" name="name2" default_focus="1"
+                                       placeholder="Second Name"/>
+                                <field id="individual" class="text-break" name="name3" default_focus="1"
+                                       placeholder="Third Name"/>
+                                <field id="individual" class="text-break" name="name4" default_focus="1"
+                                       placeholder="Last Name"/>
                             </h1>
                             <h2>
                                 <field name="code" placeholder="Code (auto-generated)"/>

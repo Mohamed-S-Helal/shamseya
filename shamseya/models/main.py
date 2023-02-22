@@ -10,26 +10,34 @@ class Case(models.Model):
     _inherit = ['res.partner', 'mail.thread', 'mail.activity.mixin']
     _description = 'Cases'
 
-    name1 = fields.Char(required=1, string="First Name")
-    name2 = fields.Char(required=1, string="Middle Name")
-    name3 = fields.Char(required=1, string="Last Name")
+    name1 = fields.Char(required=1, string="First Name", compute='split_name', readonly=0)
+    name2 = fields.Char(required=1, string="Middle Name", compute='split_name', readonly=0)
+    name3 = fields.Char(required=1, string="Last Name", compute='split_name', readonly=0)
+    name4 = fields.Char(required=1, string="Last Name", compute='split_name', readonly=0)
 
-    name = fields.Char(compute='set_name', store=1, inverse='split_name')
+    name = fields.Char(compute='set_name', store=1, default='_new')
 
-    @api.depends('name1', 'name2', 'name3')
+    @api.depends('name1', 'name2', 'name3', 'name4')
     def set_name(self):
         for rec in self:
-            rec.name = (f'{rec.name1}' if rec.name1 else '_new') + (f' {rec.name2}' if rec.name2 else '') + (
-                f' {rec.name3}' if rec.name3 else '')
+            rec.name = (
+                    (f'{rec.name1}' if rec.name1 else '_new') +
+                    (f' {rec.name2}' if rec.name2 else '') +
+                    (f' {rec.name3}' if rec.name3 else '') +
+                    (f' {rec.name4}' if rec.name4 else '')
+            )
 
+    @api.depends('name')
     def split_name(self):
         for rec in self:
             ns = rec.name.split(' ')
-            rec.name1 = ns[0]
+            rec.name1 = rec.name1 or ns[0]
             if len(ns) > 1:
-                rec.name3 = ns[-1]
+                rec.name2 = rec.name2 or ns[1]
             if len(ns) > 2:
-                rec.name2 = ' '.join(ns[1:-1])
+                rec.name3 = rec.name3 or ns[2]
+            if len(ns) > 3:
+                rec.name4 = rec.name4 or ' '.join(ns[3:])
 
     code = fields.Char(readonly=0)
     is_case = fields.Boolean()
