@@ -13,7 +13,7 @@ class Case(models.Model):
     name1 = fields.Char(required=1, string="First Name")
     name2 = fields.Char(required=1, string="Middle Name")
     name3 = fields.Char(required=1, string="Last Name")
-    
+
     name = fields.Char(compute='set_name', store=1, inverse='split_name')
 
     @api.depends('name1', 'name2', 'name3')
@@ -26,9 +26,9 @@ class Case(models.Model):
         for rec in self:
             ns = rec.name.split(' ')
             rec.name1 = ns[0]
-            if len(ns)>1:
+            if len(ns) > 1:
                 rec.name3 = ns[-1]
-            if len(ns)>2:
+            if len(ns) > 2:
                 rec.name2 = ' '.join(ns[1:-1])
 
     code = fields.Char(readonly=0)
@@ -59,7 +59,7 @@ class Case(models.Model):
 
     @api.onchange('phone')
     def onchange_phone(self):
-        if self.phone and (not self.phone.isdigit() or not self.phone.startswith('01') or len(self.phone)!=11):
+        if self.phone and (not self.phone.isdigit() or not self.phone.startswith('01') or len(self.phone) != 11):
             raise UserError('Wrong phone format: phone must be 11 digits in the format 01xxxxxxxxx')
 
     @api.onchange('phone2')
@@ -146,8 +146,14 @@ class Case(models.Model):
             'case_id': self.id,
         }
 
-        request = self.env['case.request'].sudo().create(vals)
         context = dict(self.env.context or {})
+        # states = self.env['request.state'].search([]).sorted('order_')
+        # if states:
+        #     vals.update(status=states[0].id)
+        # print(states)
+        # print(vals)
+        request = self.env['case.request'].sudo().create(vals)
+
         action = {
             'view_mode': 'form',
             'res_model': 'case.request',
@@ -217,9 +223,11 @@ class CaseRequest(models.Model):
 
     complaint = fields.Text()
 
-    status = fields.Many2one('request.state', string="Status", group_expand='_read_group_status_ids')
+    status = fields.Many2one('request.state', string="Status", group_expand='_read_group_status_ids',
+                             default=lambda self: self.env['request.state'].search([]).sorted('order_')[0].id if
+                             self.env['request.state'].search([]) else None)
 
-    @api.onchange('status','basic_service')
+    @api.onchange('status', 'basic_service')
     def onchange_status(self):
         if self.status.type == 'monthly' and self.basic_service.type != 'medicine_monthly':
             raise UserError('Monthly Follow Up is only available for "Medicine Monthly" service')
@@ -262,3 +270,12 @@ class CaseRequest(models.Model):
         ('3', 'مبادرة 100 مليون صحة'),
         ('4', 'أخرى'),
     ], default='1', string='نوع المبادرة')
+
+    # @api.model
+    # def create(self, vals):
+    #     states = self.env['request.state'].search([]).sorted('order_')
+    #     if states:
+    #         vals.update(status=states[0].id)
+    #     print(states)
+    #     print(vals)
+    #     return super().create(vals)
