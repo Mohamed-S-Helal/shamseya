@@ -117,7 +117,7 @@
 
                                 <field name="social_insurance_type"
                                        attrs="{'invisible': [('know_social_insurance_code', '=', False)]}"/>
-                                <field name="personal_id_number"
+                                <field name="personal_id_number" placeholder="ID"
                                        attrs="{'invisible': [('know_social_insurance_code', '=', False)]}"/>
                                 <field name="mother_name"
                                        attrs="{'invisible': [('know_social_insurance_code', '=', False)]}"/>

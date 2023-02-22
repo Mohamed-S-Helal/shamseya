@@ -112,9 +112,9 @@ class Case(models.Model):
 
     social_insurance_type = fields.Many2one('social.insurance.type')
     know_social_insurance_code = fields.Boolean(string="Social Insurance Code")
-    social_insurance_code = fields.Integer()
+    social_insurance_code = fields.Char()
     mother_name = fields.Char()
-    personal_id_number = fields.Integer()
+    personal_id_number = fields.Char()
 
     personal_id_card = fields.Many2many('ir.attachment', 'personal_id_card_rel')
     insurance_card = fields.Many2many('ir.attachment', 'insurance_card_rel')
