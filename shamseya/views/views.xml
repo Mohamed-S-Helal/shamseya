@@ -80,6 +80,7 @@
                                 <field name="is_case" invisible="1"/>
                             </group>
                             <group string="Personal Info" colspan="2">
+                                <field name="personal_id_number" String="National ID" placeholder="ID"/>
                                 <field name="phone" widget="phone" placeholder="01xxxxxxxxx"/>
                                 <field name="phone2" widget="phone" placeholder="01xxxxxxxxx"/>
                                 <field name="gender"/>
@@ -117,17 +118,12 @@
 
                                 <field name="social_insurance_id"
                                        attrs="{'invisible': [('know_social_insurance_code', '=', False)]}"/>
-                                <field name="personal_id_number" placeholder="ID"
-                                       attrs="{'invisible': [('know_social_insurance_code', '=', False)]}"/>
                                 <field name="mother_name"
                                        attrs="{'invisible': [('know_social_insurance_code', '=', False)]}"/>
 
-                                <label for="health_coverage"/>
-                                <div class="o_row">
-                                    <field name="health_coverage"/>
-                                    <field name="health_coverage_type"
-                                           attrs="{'invisible': [('health_coverage', '=', False)]}"/>
-                                </div>
+
+                                <field name="health_coverage"/>
+
 
                             </group>
                         </group>
@@ -620,7 +616,8 @@
                     <sheet>
                         <group>
                             <field name="name"/>
-                            <field name="partner_ids" widget="many2many_tags" string="Cases" domain="[('is_case','=',True)]"/>
+                            <field name="partner_ids" widget="many2many_tags" string="Cases"
+                                   domain="[('is_case','=',True)]"/>
                         </group>
                     </sheet>
                 </form>
@@ -653,7 +650,8 @@
                     <sheet>
                         <group>
                             <field name="name"/>
-                            <field name="partner_ids" widget="many2many_tags" string="Cases" domain="[('is_case','=',True)]"/>
+                            <field name="partner_ids" widget="many2many_tags" string="Cases"
+                                   domain="[('is_case','=',True)]"/>
                         </group>
                     </sheet>
                 </form>
@@ -677,7 +675,7 @@
                 parent="menu_config"
                 groups=""
                 action="shamseya.action_social_insurance_type"
-                />
+        />
 
         <record id="action_diagnosis" model="ir.actions.act_window">
             <field name="name">Diagnosis</field>
@@ -970,11 +968,18 @@
                 <form string="issue_form">
                     <group>
                         <field name="name"/>
-                        <field name="reason"/>
+                        <field name="number"/>
+                        <field name="case_id"/>
+                        <field name="request_id"/>
                         <field name="date"/>
-                        <field name="follow_up_id"/>
-                        <field name="issuer"/>
-                        <field name="personal_id_number"/>
+                        <field name="reason"/>
+                        <field name="against"/>
+                        <field name="applied_to"/>
+                        <field name="applier"/>
+                        <field name="applier_id_no"/>
+                        <field name="phone_follow_up" widget="phone"/>
+                        <field name="attachments" widget="many2many_binary"/>
+                        <field name="applier_id_no"/>
                     </group>
                 </form>
             </field>
@@ -995,18 +1000,25 @@
                     <field name="reason"/>
                     <field name="date"/>
                     <field name="follow_up_id"/>
-                    <field name="personal_id_number"/>
+                    <field name="applier_id_no"/>
                     <templates>
                         <t t-name="kanban-box">
                             <div class="oe_kanban_global_click o_kanban_record_has_image_fill">
                                 <div class="oe_kanban_details d-flex flex-column">
                                     <strong class="o_kanban_record_title oe_partner_heading">
-                                        <field name="follow_up_id"/>
+                                        <field name="name"/>
                                     </strong>
-                                    <field name="name"/>
+                                    <field name="number"/>
+                                    <field name="case_id"/>
+                                    <field name="request_id"/>
                                     <field name="date"/>
                                     <field name="reason"/>
-                                    <field name="personal_id_number"/>
+                                    <field name="against"/>
+                                    <field name="applied_to"/>
+                                    <field name="applier"/>
+                                    <field name="applier_id_no"/>
+                                    <field name="phone_follow_up"/>
+                                    <field name="applier_id_no"/>
                                 </div>
                                 <div class="oe_kanban_top_left">
                                     <field name="kanban_state" widget="state_selection" groups="base.group_user"

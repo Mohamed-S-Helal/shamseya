@@ -121,9 +121,9 @@ class Case(models.Model):
     health_card = fields.Many2many('ir.attachment', 'health_card_rel')
     other_attachments = fields.Many2many('ir.attachment', 'other_attachments_rel')
 
-    health_coverage = fields.Boolean()
+    # health_coverage = fields.Boolean()
     # health_coverage_type = fields.Many2one('health.coverage')
-    health_coverage_type = fields.Selection([
+    health_coverage = fields.Selection([
         ('1', 'تأمين صحي'),
         ('2', 'علاج على نفقة الدولة'),
         ('3', 'مبادرات وحملات رئاسية'),
@@ -287,3 +287,35 @@ class CaseRequest(models.Model):
     #     print(states)
     #     print(vals)
     #     return super().create(vals)
+
+
+class MonthlyFollowUp(models.Model):
+    _name = 'monthly.follow.up'
+
+    request_id = fields.Many2one('case.request')
+    name = fields.Char(related='request_id.name')
+    date = fields.Date()
+    m_status = fields.Selection([('in_process', 'In Process'), ('done', 'Done'), ('problem', 'Problem')],
+                                string='Status', default='in_process')
+
+    # month = fields.Selection([(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'),
+    #                           (5, 'May'), (6, 'June'), (7, 'July'), (8, 'August'),
+    #                           (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December'), ],
+    #                          string='Month', )
+    # year = fields.Selection(get_years(), string='Year', default=datetime.now().year)
+    # medicine = fields.Many2one('medicine')
+    issues = fields.One2many('follow.up.issue', 'follow_up_id')
+
+    def open_issue(self):
+        [action] = self.env.ref('shamseya.issue_action').read()
+
+        if action:
+            action['domain'] = [('follow_up_id', '=', self.id)]
+            action['context'] = {
+                'default_follow_up_id': self.id,
+                'default_case_id': self.request_id.case_id.id,
+                'default_request_id': self.request_id.id,
+                'default_applier_id_no': self.request_id.case_id.personal_id_number,}
+            # action['view_mode'] = 'tree,form'
+            # action['views'] = [(k, v) for k, v in action['views'] if v in ['tree', 'form']]
+            return action

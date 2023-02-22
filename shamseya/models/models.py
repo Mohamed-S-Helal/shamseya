@@ -154,46 +154,25 @@ class RequestState(models.Model):
     ], default='other')
 
 
-class MonthlyFollowUp(models.Model):
-    _name = 'monthly.follow.up'
-
-    request_id = fields.Many2one('case.request')
-    name = fields.Char(related='request_id.name')
-    date = fields.Date()
-    m_status = fields.Selection([('in_process', 'In Process'), ('done', 'Done'), ('problem', 'Problem')],
-                                string='Status', default='in_process')
-
-    # month = fields.Selection([(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'),
-    #                           (5, 'May'), (6, 'June'), (7, 'July'), (8, 'August'),
-    #                           (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December'), ],
-    #                          string='Month', )
-    # year = fields.Selection(get_years(), string='Year', default=datetime.now().year)
-    # medicine = fields.Many2one('medicine')
-    issues = fields.One2many('follow.up.issue', 'follow_up_id')
-
-    def open_issue(self):
-        [action] = self.env.ref('shamseya.issue_action').read()
-
-        if action:
-            action['domain'] = [('follow_up_id', '=', self.id)]
-            action['context'] = {
-                'default_follow_up_id': self.id,
-                'default_issuer': self.request_id.case_id.id,
-                'default_personal_id_number': self.request_id.case_id.personal_id_number,}
-            # action['view_mode'] = 'tree,form'
-            # action['views'] = [(k, v) for k, v in action['views'] if v in ['tree', 'form']]
-            return action
 
 
 class FollowUpIssue(models.Model):
     _name = 'follow.up.issue'
 
-    name = fields.Char(required=True, string="رقم الشكوى")
-    reason = fields.Text(string="سبب الشكوى")
+    name = fields.Char(required=True, string="اسم الشكوى")
+    number = fields.Char(required=True, string="رقم الشكوى")
+    reason = fields.Text(string="سبب/وصف الشكوى")
+    against = fields.Char(string="الشكوى ضد")
+    applied_to = fields.Char(string="الجهة المقدم لها الشكوى")
+    applier = fields.Char(string="اسم مقدم الشكوى")
+    case_relation = fields.Char(string="اسم مقدم الشكوى")
+    applier_id_no = fields.Char(string="رقم بطاقة مقدم الشكوى")
+    phone_follow_up = fields.Char(string="رقم تليفون للمتابعة")
+    attachments = fields.Many2many('ir.attachment', relation='issue_attachment_rel')
     date = fields.Date(string="تاريخ تقديم الشكوى", default=fields.Date.context_today)
     follow_up_id = fields.Many2one('monthly.follow.up')
-    issuer = fields.Many2one('res.partner', domain=[('is_case', '=', True)], default=lambda self:self.follow_up_id.request_id.case_id)
-    personal_id_number = fields.Integer(string="رقم بطاقة مقدم الشكوى")
+    request_id = fields.Many2one('case.request', default=lambda self:self.follow_up_id.request_id)
+    case_id = fields.Many2one('res.partner', domain=[('is_case', '=', True)], related='request_id.case_id')
 
     kanban_state = fields.Selection([
         ('done', 'In Progress'),
