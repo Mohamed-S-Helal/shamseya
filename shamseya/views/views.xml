@@ -102,7 +102,7 @@
                                 <label for="has_health_insurance"/>
                                 <div class="o_row">
                                     <field name="has_health_insurance"/>
-                                    <field name="health_insurance_type"
+                                    <field name="health_insurance_id"
                                            attrs="{'invisible': [('has_health_insurance', '=', False)]}"
                                            placeholder="Type"/>
                                 </div>
@@ -115,7 +115,7 @@
                                            placeholder="Code"/>
                                 </div>
 
-                                <field name="social_insurance_type"
+                                <field name="social_insurance_id"
                                        attrs="{'invisible': [('know_social_insurance_code', '=', False)]}"/>
                                 <field name="personal_id_number" placeholder="ID"
                                        attrs="{'invisible': [('know_social_insurance_code', '=', False)]}"/>
@@ -612,9 +612,24 @@
                 action="shamseya.action_pension_type"
                 sequence="3"/>
 
+        <record id="health_insurance_view_form" model="ir.ui.view">
+            <field name="name">health_insurance_view_form</field>
+            <field name="model">health.insurance</field>
+            <field name="arch" type="xml">
+                <form string="social_insurance_form">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="partner_ids" widget="many2many_tags" string="Cases"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
         <record id="action_health_insurance_type" model="ir.actions.act_window">
             <field name="name">Health Insurance Type</field>
-            <field name="res_model">health.insurance.type</field>
+            <field name="res_model">health.insurance</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
@@ -628,12 +643,26 @@
                 name="Health Insurance Types"
                 parent="menu_config"
                 groups=""
-                action="shamseya.action_health_insurance_type"
-                sequence="4"/>
+                action="shamseya.action_health_insurance_type"/>
+
+        <record id="social_insurance_view_form" model="ir.ui.view">
+            <field name="name">social_insurance_view_form</field>
+            <field name="model">social.insurance</field>
+            <field name="arch" type="xml">
+                <form string="social_insurance_form">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="partner_ids" widget="many2many_tags" string="Cases"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
 
         <record id="action_social_insurance_type" model="ir.actions.act_window">
             <field name="name">Social Insurance Type</field>
-            <field name="res_model">social.insurance.type</field>
+            <field name="res_model">social.insurance</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
@@ -648,7 +677,7 @@
                 parent="menu_config"
                 groups=""
                 action="shamseya.action_social_insurance_type"
-                sequence="4"/>
+                />
 
         <record id="action_diagnosis" model="ir.actions.act_window">
             <field name="name">Diagnosis</field>

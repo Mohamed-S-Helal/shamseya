@@ -46,20 +46,19 @@ class IncomeResource(models.Model):
 
 class PensionType(models.Model):
     _name = 'pension.type'
-
     name = fields.Char(required=1)
 
 
-class HealthInsuranceType(models.Model):
-    _name = 'health.insurance.type'
+class HealthInsurance(models.Model):
+    _name = 'health.insurance'
     name = fields.Char(required=1)
-    partner_ids = fields.One2many('res.partner', 'health_insurance_type')
+    partner_ids = fields.One2many('res.partner', 'health_insurance_id')
 
 
-class SocialInsuranceType(models.Model):
-    _name = 'social.insurance.type'
+class SocialInsurance(models.Model):
+    _name = 'social.insurance'
     name = fields.Char(required=1)
-    partner_ids = fields.One2many('res.partner', 'social_insurance_type')
+    partner_ids = fields.One2many('res.partner', 'social_insurance_id')
 
 
 class Diagnosis(models.Model):

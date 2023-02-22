@@ -108,9 +108,9 @@ class Case(models.Model):
     currency_id = fields.Many2one('res.currency', related='country_id.currency_id')
     average_income = fields.Monetary('Average Income', currency_field='currency_id')
     has_health_insurance = fields.Boolean()
-    health_insurance_type = fields.Many2one('health.insurance.type')
+    health_insurance_id = fields.Many2one('health.insurance')
 
-    social_insurance_type = fields.Many2one('social.insurance.type')
+    social_insurance_id = fields.Many2one('social.insurance')
     know_social_insurance_code = fields.Boolean(string="Social Insurance Code")
     social_insurance_code = fields.Char()
     mother_name = fields.Char()
