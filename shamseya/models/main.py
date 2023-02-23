@@ -15,7 +15,7 @@ class Case(models.Model):
     name3 = fields.Char(required=1, string="Last Name", compute='split_name', readonly=0)
     name4 = fields.Char(required=1, string="Last Name", compute='split_name', readonly=0)
 
-    name = fields.Char(compute='set_name', store=1, default='_new')
+    name = fields.Char(compute='set_name', store=1, default='_new', readonly=0)
 
     @api.depends('name1', 'name2', 'name3', 'name4')
     def set_name(self):
