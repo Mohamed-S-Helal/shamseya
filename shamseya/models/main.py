@@ -75,8 +75,8 @@ class Case(models.Model):
             rec.age = age_y
             rec.age_m = age_m
 
-    phone = fields.Char(string='Phone', required=1)
-    phone2 = fields.Char(string='Second Phone')
+    phone = fields.Char(string='رقم الموبايل', required=1)
+    phone2 = fields.Char(string='رقم الواتساب')
 
     @api.onchange('phone')
     def onchange_phone(self):
@@ -133,7 +133,7 @@ class Case(models.Model):
     ], default='1', string='نوع التغطية الصحية')
 
     social_insurance_id = fields.Many2one('social.insurance', string='نوع التأمين الاجتماعي')
-    know_social_insurance_code = fields.Boolean(string="رقم التأمين الصحي")
+    know_social_insurance_code = fields.Boolean(string="الرقم التأميني")
     social_insurance_code = fields.Char()
     mother_name = fields.Char()
     personal_id_number = fields.Char(required=1)
@@ -263,7 +263,7 @@ class CaseRequest(models.Model):
     kanban_state = fields.Selection([
         ('done', 'In Progress'),
         ('blocked', 'On Hold')], string='Progress',
-        copy=False, default='done', required=True)
+        copy=False, default='done', required=True, tracking=1)
 
     # show_service_monthly = fields.Selection(related='basic_service.monthly')
     service_type = fields.Selection(related='basic_service.type')

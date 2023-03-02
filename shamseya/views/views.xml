@@ -328,9 +328,8 @@
             <field name="model">case.request</field>
             <field name="arch" type="xml">
                 <tree string="Contacts" sample="0" multi_edit="1" create="1">
-                    <field name="name"/>
-                    <field name="case_id"/>
                     <field name="basic_service"/>
+                    <field name="case_id"/>
                     <field name="status"/>
                 </tree>
             </field>
@@ -467,9 +466,9 @@
                                      role="img"/>
                                 <div class="oe_kanban_details d-flex flex-column">
                                     <strong class="o_kanban_record_title oe_partner_heading">
-                                        <field name="case_id"/>
+                                        <field name="basic_service"/>
                                     </strong>
-                                    <field name="basic_service"/>
+                                    <field name="case_id"/>
                                     <field name="service_type" invisible="1"/>
                                     <field name="medicine"
                                            attrs="{'invisible': [('service_type', 'not in', ['medicine_once','medicine_monthly'])]}"/>
