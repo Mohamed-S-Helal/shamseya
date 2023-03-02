@@ -56,7 +56,10 @@
                                        placeholder="Last Name"/>
                             </h1>
                             <h2>
-                                <field name="code" placeholder="Code (auto-generated)"/>
+                                <field name="code" placeholder="Code (auto-generated)" force_save="1"/>
+                                <field name="seq" placeholder="Code (auto-generated)" invisible="1"/>
+                                <field name="next_code" placeholder="Code (auto-generated)"/>
+
                             </h2>
                         </div>
                         <group col="6">
@@ -100,13 +103,8 @@
                                 <field name="currency_id" invisible="1"/>
                                 <field name="average_income" widget="monetary"/>
 
-                                <label for="has_health_insurance"/>
-                                <div class="o_row">
-                                    <field name="has_health_insurance"/>
-                                    <field name="health_insurance_id"
-                                           attrs="{'invisible': [('has_health_insurance', '=', False)]}"
-                                           placeholder="Type"/>
-                                </div>
+                                <field name="health_insurance_id" placeholder="Type"/>
+
 
                                 <label for="know_social_insurance_code"/>
                                 <div class="o_row">
@@ -119,7 +117,7 @@
                                 <field name="social_insurance_id"
                                        attrs="{'invisible': [('know_social_insurance_code', '=', False)]}"/>
                                 <field name="mother_name"
-                                       attrs="{'invisible': [('know_social_insurance_code', '=', False)]}"/>
+                                       attrs="{'invisible': [('know_social_insurance_code', '=', True)]}"/>
 
 
                                 <field name="health_coverage"/>
@@ -144,36 +142,35 @@
                                 </group>
                             </page>
                             <page name='attachments' string="Attachments">
-                                <group col="4">
-                                    <group colspan="1">
-                                        <label for="personal_id_card"/>
-                                    </group>
-                                    <group colspan="1" attrs="{'invisible': [('has_health_insurance', '=', False)]}">
-                                        <label for="insurance_card"/>
-                                    </group>
-                                    <group colspan="1">
-                                        <label for="health_card"/>
-                                    </group>
-                                    <group colspan="1">
-                                        <label for="other_attachments"/>
-                                    </group>
-                                </group>
-                                <group col="4">
-                                    <group colspan="1">
-                                        <field name="personal_id_card"
-                                               widget="many2many_binary" nolabel="1"/>
-                                    </group>
-                                    <group colspan="1" attrs="{'invisible': [('has_health_insurance', '=', False)]}">
+                                <group>
+                                    <group>
+                                        <div>
+                                            <h1>Medical</h1>
+                                            <h1>
+                                                <br></br>
+                                            </h1>
+                                        </div>
+
+
                                         <field name="insurance_card"
-                                               widget="many2many_binary" nolabel="1"/>
-                                    </group>
-                                    <group colspan="1">
+                                               widget="many2many_binary" nolabel="0"/>
+
                                         <field name="health_card"
-                                               widget="many2many_binary" nolabel="1"/>
+                                               widget="many2many_binary" nolabel="0"/>
                                     </group>
-                                    <group colspan="1">
+
+                                    <group>
+                                        <div>
+                                            <h1>Legal</h1>
+                                            <h1>
+                                                <br></br>
+                                            </h1>
+                                        </div>
+                                        <field name="personal_id_card"
+                                               widget="many2many_binary" nolabel="0"/>
+
                                         <field name="other_attachments"
-                                               widget="many2many_binary" nolabel="1"/>
+                                               widget="many2many_binary" nolabel="0"/>
                                     </group>
                                 </group>
                             </page>
@@ -300,7 +297,7 @@
 
         <menuitem
                 id="menu_shamseya_root"
-                name="Shamseya"
+                name="El Nase7"
                 web_icon="shamseya,static/description/icon.png"
                 sequence="0"
         />
@@ -331,6 +328,7 @@
             <field name="model">case.request</field>
             <field name="arch" type="xml">
                 <tree string="Contacts" sample="0" multi_edit="1" create="1">
+                    <field name="name"/>
                     <field name="case_id"/>
                     <field name="basic_service"/>
                     <field name="status"/>
@@ -430,10 +428,10 @@
             <field name="arch" type="xml">
                 <form>
                     <group>
+                        <field name="basic_service"/>
                         <field name="case_id"
                                context="{'default_is_case':'True','form_view_ref':'shamseya.view_case_form'}"/>
                         <field name="complaint"/>
-                        <field name="basic_service"/>
                         <field name="description"/>
                         <field name="service_type" invisible="1"/>
                         <field name="medicine"
@@ -972,21 +970,29 @@
             <field name="model">follow.up.issue</field>
             <field name="arch" type="xml">
                 <form string="issue_form">
-                    <group>
-                        <field name="name"/>
-                        <field name="number"/>
-                        <field name="case_id"/>
-                        <field name="request_id"/>
-                        <field name="date"/>
-                        <field name="reason"/>
-                        <field name="against"/>
-                        <field name="applied_to"/>
-                        <field name="applier"/>
-                        <field name="applier_id_no"/>
-                        <field name="phone_follow_up" widget="phone"/>
-                        <field name="attachments" widget="many2many_binary"/>
-                        <field name="applier_id_no"/>
-                    </group>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="number"/>
+                            <field name="case_id"/>
+                            <field name="request_id"/>
+                            <field name="date"/>
+                            <field name="reason"/>
+                            <field name="against"/>
+                            <field name="applied_to"/>
+                            <field name="applier"/>
+                            <field name="applier_id_no"/>
+                            <field name="phone_follow_up" widget="phone"/>
+                            <field name="attachments" widget="many2many_binary"/>
+                            <field name="applier_id_no"/>
+                        </group>
+                        <div class="oe_chatter">
+                            <field name="message_follower_ids"/>
+                            <field name="activity_ids"/>
+                            <field name="message_ids" options="{'post_refresh': 'recipients'}"/>
+                        </div>
+                    </sheet>
+
                 </form>
             </field>
         </record>
@@ -1055,7 +1061,7 @@
         <menuitem
                 id="issues_menu"
                 name="Issues"
-                parent="menu_shamseya_root"
+                parent="menu_config"
                 groups=""
                 action="issue_action"
                 sequence="4"/>

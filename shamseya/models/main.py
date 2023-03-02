@@ -39,7 +39,19 @@ class Case(models.Model):
             if len(ns) > 3:
                 rec.name4 = rec.name4 or ' '.join(ns[3:])
 
+    def get_code(self):
+        serial = self.env['ir.sequence'].next_by_code('case.seq')
+        prefix = self.env.user.prefix or '_'
+        return f'{prefix}-{serial}'
+
     code = fields.Char(readonly=0)
+    # code = fields.Char(default=get_code, readonly=0)
+
+    seq = fields.Many2one('ir.sequence',
+                          default=lambda self: self.env['ir.sequence'].search([('code', '=', 'case.seq')], limit=1))
+
+    next_code = fields.Integer(readonly=0, related='seq.number_next_actual')
+
     is_case = fields.Boolean()
     created_by = fields.Many2one('res.partner', default=lambda self: self.create_uid.partner_id,
                                  domain="[('is_case', '=', False)]")
@@ -63,6 +75,7 @@ class Case(models.Model):
             rec.age = age_y
             rec.age_m = age_m
 
+    phone = fields.Char(string='Phone', required=1)
     phone2 = fields.Char(string='Second Phone')
 
     @api.onchange('phone')
@@ -107,22 +120,9 @@ class Case(models.Model):
     pension_type = fields.Many2one('pension.type')
     currency_id = fields.Many2one('res.currency', related='country_id.currency_id')
     average_income = fields.Monetary('Average Income', currency_field='currency_id')
-    has_health_insurance = fields.Boolean()
+    # has_health_insurance = fields.Boolean()
     health_insurance_id = fields.Many2one('health.insurance')
 
-    social_insurance_id = fields.Many2one('social.insurance')
-    know_social_insurance_code = fields.Boolean(string="Social Insurance Code")
-    social_insurance_code = fields.Char()
-    mother_name = fields.Char()
-    personal_id_number = fields.Char()
-
-    personal_id_card = fields.Many2many('ir.attachment', 'personal_id_card_rel')
-    insurance_card = fields.Many2many('ir.attachment', 'insurance_card_rel')
-    health_card = fields.Many2many('ir.attachment', 'health_card_rel')
-    other_attachments = fields.Many2many('ir.attachment', 'other_attachments_rel')
-
-    # health_coverage = fields.Boolean()
-    # health_coverage_type = fields.Many2one('health.coverage')
     health_coverage = fields.Selection([
         ('1', 'تأمين صحي'),
         ('2', 'علاج على نفقة الدولة'),
@@ -131,6 +131,21 @@ class Case(models.Model):
         ('5', 'تأمين صحي لطلبة الجامعات'),
         ('6', 'كارت خدمات متكاملة'),
     ], default='1', string='نوع التغطية الصحية')
+
+    social_insurance_id = fields.Many2one('social.insurance', string='نوع التأمين الاجتماعي')
+    know_social_insurance_code = fields.Boolean(string="رقم التأمين الصحي")
+    social_insurance_code = fields.Char()
+    mother_name = fields.Char()
+    personal_id_number = fields.Char(required=1)
+
+    personal_id_card = fields.Many2many('ir.attachment', 'personal_id_card_rel')
+    insurance_card = fields.Many2many('ir.attachment', 'insurance_card_rel')
+    health_card = fields.Many2many('ir.attachment', 'health_card_rel')
+    other_attachments = fields.Many2many('ir.attachment', 'other_attachments_rel')
+
+    # health_coverage = fields.Boolean()
+    # health_coverage_type = fields.Many2one('health.coverage')
+
 
     requests = fields.One2many('case.request', 'case_id')
 
@@ -185,9 +200,10 @@ class Case(models.Model):
 class CaseRequest(models.Model):
     _name = 'case.request'
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    # _rec_name = 'basic_service'
 
     case_id = fields.Many2one('res.partner', required=1, domain=[('is_case', '=', True)])
-    name = fields.Char(related='case_id.name', store=1, readonly=1)
+    name = fields.Char(related='basic_service.name', store=1, readonly=1)
 
     @api.onchange('case_id')
     def onchange_area(self):
@@ -200,7 +216,7 @@ class CaseRequest(models.Model):
         ('1', 'Important'),
     ], default='0', index=True, string="Starred", tracking=True)
 
-    basic_service = fields.Many2one('basic.service')
+    basic_service = fields.Many2one('basic.service', required=1)
     description = fields.Text()
     medicine_type = fields.Many2many('medicine.type', relation='request_type_rel')
     medicine = fields.Many2many('medicine', relation='request_medicine_rel')
@@ -321,7 +337,7 @@ class MonthlyFollowUp(models.Model):
                 'default_follow_up_id': self.id,
                 'default_case_id': self.request_id.case_id.id,
                 'default_request_id': self.request_id.id,
-                'default_applier_id_no': self.request_id.case_id.personal_id_number,}
+                'default_applier_id_no': self.request_id.case_id.personal_id_number, }
             # action['view_mode'] = 'tree,form'
             # action['views'] = [(k, v) for k, v in action['views'] if v in ['tree', 'form']]
             return action

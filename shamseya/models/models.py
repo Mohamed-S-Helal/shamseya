@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
 
-from odoo import models, fields, api, _
+from collections import defaultdict
+from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
+
+from odoo import api, exceptions, fields, models, _, Command
 
 
 def get_years():
@@ -154,10 +156,10 @@ class RequestState(models.Model):
     ], default='other')
 
 
-
-
 class FollowUpIssue(models.Model):
     _name = 'follow.up.issue'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+
 
     name = fields.Char(required=True, string="اسم الشكوى")
     number = fields.Char(required=True, string="رقم الشكوى")
