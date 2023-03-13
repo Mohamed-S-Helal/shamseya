@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from dateutil.relativedelta import relativedelta
+
+
+class ResUsers(models.Model):
+    _inherit = 'res.users'
+
+    seq = fields.Many2one('ir.sequence', string=_('Sequence'))
+    next_code = fields.Integer(readonly=0, related='seq.number_next_actual')
+
 
 
 class Case(models.Model):
@@ -40,17 +48,11 @@ class Case(models.Model):
                 rec.name4 = rec.name4 or ' '.join(ns[3:])
 
     def get_code(self):
-        serial = self.env['ir.sequence'].next_by_code('case.seq')
+        serial = self.env.user.next_code
         prefix = self.env.user.prefix or '_'
-        return f'{prefix}-{serial}'
+        return f'{prefix}/{serial}'
 
-    code = fields.Char(readonly=0)
-    # code = fields.Char(default=get_code, readonly=0)
-
-    seq = fields.Many2one('ir.sequence',
-                          default=lambda self: self.env['ir.sequence'].search([('code', '=', 'case.seq')], limit=1))
-
-    next_code = fields.Integer(readonly=0, related='seq.number_next_actual')
+    code = fields.Char(default=get_code, readonly=1)
 
     is_case = fields.Boolean()
     created_by = fields.Many2one('res.partner', default=lambda self: self.create_uid.partner_id,
@@ -191,10 +193,19 @@ class Case(models.Model):
     @api.model
     def create(self, vals):
         res = super().create(vals)
-        serial = self.env['ir.sequence'].next_by_code('case.seq')
+        serial = self.env.user.seq.next_by_id()
         prefix = self.env.user.prefix or '_'
-        res.code = f'{prefix}-{serial}'
+        res.code = f'{prefix}/{serial}'
         return res
+
+    def unlink(self):
+        seq = str(self.env.user.next_code-1).zfill(self.env.user.seq.padding)
+        print(seq)
+        print(self.code)
+        if self.code.endswith(seq):
+            print('un')
+            self.env.user.next_code -= 1
+        return super().unlink()
 
 
 class CaseRequest(models.Model):

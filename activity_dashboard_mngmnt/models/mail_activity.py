@@ -41,7 +41,7 @@ class MailActivity(models.Model):
     type = fields.Selection(
         [('overdue', 'Overdue'), ('today', 'Today'), ('planned', 'Planned'),
          ('done', 'Done'), ('cancel', 'Cancelled')])
-    activity_type = fields.Many2many('activity.tag')
+    activity_type = fields.Many2many('activity.tag', string='Activity Tag')
 
     def activity_cancel(self):
         """cancel activity"""
@@ -64,7 +64,7 @@ class MailActivity(models.Model):
     def get_activity_count(self):
         """get the activity count details"""
         activity = self.env['mail.activity']
-        all = activity.search([])
+        all = activity.search(['|', ('active', '=', True), ('active', '=', False)])
         planned = activity.search([('state', '=', 'planned')])
         overdue = activity.search([('state', '=', 'overdue')])
         today = activity.search([('state', '=', 'today')])
@@ -177,3 +177,16 @@ class MailActivity(models.Model):
         """change state and type"""
         for rec in self:
             rec.type = rec.state
+
+    def open_document(self):
+        res_model = self.res_model_id.model
+        res_id = self.res_id
+
+        action = {
+            'view_mode': 'form',
+            'res_model': res_model,
+            'type': 'ir.actions.act_window',
+            'res_id': res_id,
+            'target': 'self'
+        }
+        return action

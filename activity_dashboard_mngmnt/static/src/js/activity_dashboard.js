@@ -129,7 +129,7 @@ odoo.define('activity_dashboard_mngmnt.activity_dashboard', function (require) {
             name: 'All Activity',
             res_model: 'mail.activity',
     //                res_id: [1],
-            domain: [],
+            domain: ['|',['active', '=', true],['active', '=', false]],
             views: [[false, 'list'], [false, 'form']],
             view_mode: 'list',
             target: 'current'
