@@ -80,7 +80,5 @@
 
         <menuitem id="activity_menu_root" parent="shamseya.menu_shamseya_root" name="Activity Dashboard" sequence="25"/>
 
-        <menuitem id="menu_my_activities" sequence="2"/>
-
     </data>
 </odoo>
