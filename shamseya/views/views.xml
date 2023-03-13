@@ -123,7 +123,8 @@
                             </group>
                             <group string="Social Info" colspan="2">
                                 <field name="income_resource"/>
-                                <field name="pension_type"/>
+                                <field name="pension" invisible="1"/>
+                                <field name="pension_type" attrs="{'invisible': [('pension', '=', False)]}"/>
                                 <field name="currency_id" invisible="1"/>
                                 <field name="average_income" widget="monetary"/>
 
@@ -138,13 +139,16 @@
                                            placeholder="Code"/>
                                 </div>
 
-                                <field name="social_insurance_id"
-                                       attrs="{'invisible': [('know_social_insurance_code', '=', False)]}"/>
+<!--                                <field name="social_insurance_id"-->
+<!--                                       attrs="{'invisible': [('know_social_insurance_code', '=', False)]}"/>-->
                                 <field name="mother_name"
                                        attrs="{'invisible': [('know_social_insurance_code', '=', True)]}"/>
 
 
                                 <field name="health_coverage"/>
+                                 <field name="initiative"
+                                       attrs="{'invisible': [('health_coverage', 'not in', ['3'])]}"/>
+
 
 
                             </group>
@@ -389,9 +393,9 @@
                                 <field name="basic_service"/>
                                 <field name="service_type" invisible="1"/>
                                 <field name="medicine_type" widget="many2many_tags"
-                                       attrs="{'invisible': [('service_type', 'not in', ['medicine_once','medicine_monthly'])]}"/>
+                                       attrs="{'invisible': [('service_type', 'not in', ['medicine'])]}"/>
                                 <field name="medicine" widget="many2many_tags"
-                                       attrs="{'invisible': [('service_type', 'not in', ['medicine_once','medicine_monthly'])]}"/>
+                                       attrs="{'invisible': [('service_type', 'not in', ['medicine'])]}"/>
                                 <field name="operation"
                                        attrs="{'invisible': [('service_type', 'not in', ['operation'])]}"/>
                                 <field name="currency_id" invisible="1"/>
@@ -406,7 +410,7 @@
                         </group>
 
                         <notebook
-                                attrs="{'invisible': [('service_type', '!=', 'medicine_monthly')]}">
+                                attrs="{'invisible': [('service_type', '!=', 'medicine')]}">
                             <page name="monthly_follow_up" string="Monthly Follow-Up">
                                 <group>
                                     <field name="monthly_follow_up"
@@ -670,40 +674,40 @@
                 groups=""
                 action="shamseya.action_health_insurance_type"/>
 
-        <record id="social_insurance_view_form" model="ir.ui.view">
-            <field name="name">social_insurance_view_form</field>
-            <field name="model">social.insurance</field>
-            <field name="arch" type="xml">
-                <form string="social_insurance_form">
-                    <sheet>
-                        <group>
-                            <field name="name"/>
-                            <field name="partner_ids" widget="many2many_tags" string="Cases"
-                                   domain="[('is_case','=',True)]"/>
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
+<!--        <record id="social_insurance_view_form" model="ir.ui.view">-->
+<!--            <field name="name">social_insurance_view_form</field>-->
+<!--            <field name="model">social.insurance</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <form string="social_insurance_form">-->
+<!--                    <sheet>-->
+<!--                        <group>-->
+<!--                            <field name="name"/>-->
+<!--                            <field name="partner_ids" widget="many2many_tags" string="Cases"-->
+<!--                                   domain="[('is_case','=',True)]"/>-->
+<!--                        </group>-->
+<!--                    </sheet>-->
+<!--                </form>-->
+<!--            </field>-->
+<!--        </record>-->
 
-        <record id="action_social_insurance_type" model="ir.actions.act_window">
-            <field name="name">Social Insurance Type</field>
-            <field name="res_model">social.insurance</field>
-            <field name="view_mode">tree,form</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Create a new Insurance Type
-                </p>
-            </field>
-        </record>
+<!--        <record id="action_social_insurance_type" model="ir.actions.act_window">-->
+<!--            <field name="name">Social Insurance Type</field>-->
+<!--            <field name="res_model">social.insurance</field>-->
+<!--            <field name="view_mode">tree,form</field>-->
+<!--            <field name="help" type="html">-->
+<!--                <p class="o_view_nocontent_smiling_face">-->
+<!--                    Create a new Insurance Type-->
+<!--                </p>-->
+<!--            </field>-->
+<!--        </record>-->
 
-        <menuitem
-                id="menu_social_insurance_type"
-                name="Social Insurance Types"
-                parent="menu_config"
-                groups=""
-                action="shamseya.action_social_insurance_type"
-        />
+<!--        <menuitem-->
+<!--                id="menu_social_insurance_type"-->
+<!--                name="Social Insurance Types"-->
+<!--                parent="menu_config"-->
+<!--                groups=""-->
+<!--                action="shamseya.action_social_insurance_type"-->
+<!--        />-->
 
         <record id="action_diagnosis" model="ir.actions.act_window">
             <field name="name">Diagnosis</field>
@@ -733,7 +737,6 @@
                         <field name="name"/>
                         <!--                        <field name="medicine"/>-->
                         <field name="type" widget="radio"/>
-                        <field name="description"/>
                     </group>
                 </form>
             </field>

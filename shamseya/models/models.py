@@ -44,6 +44,7 @@ class IncomeResource(models.Model):
     _name = 'income.resource'
 
     name = fields.Char(required=1)
+    pension = fields.Boolean(default=False, string='معاش')
 
 
 class PensionType(models.Model):
@@ -57,10 +58,10 @@ class HealthInsurance(models.Model):
     partner_ids = fields.One2many('res.partner', 'health_insurance_id')
 
 
-class SocialInsurance(models.Model):
-    _name = 'social.insurance'
-    name = fields.Char(required=1)
-    partner_ids = fields.One2many('res.partner', 'social_insurance_id')
+# class SocialInsurance(models.Model):
+#     _name = 'social.insurance'
+#     name = fields.Char(required=1)
+#     partner_ids = fields.One2many('res.partner', 'social_insurance_id')
 
 
 class Diagnosis(models.Model):
@@ -125,9 +126,9 @@ class BasicService(models.Model):
     name = fields.Char(required=1)
     medicine = fields.Boolean()
     type = fields.Selection([
-        ('insurance_request', _('Insurance Request')),
-        ('examination', _('Examination')),
-        ('medicine_once', _('Medicine One Time')),
+        ('insurance_request', _('طلب تأمين')),
+        ('examination', _('كشف')),
+        ('medicine_once', _('صرف علاج')),
         ('medicine_monthly', _('Medicine Monthly')),
         ('operation', _('Operation')),
         ('inquiry', _('Inquiry')),
@@ -137,7 +138,6 @@ class BasicService(models.Model):
     #     ('one_time', 'One Time'),
     #     ('monthly', 'Monthly'),
     # ], default='one_time')
-    description = fields.Text()
 
 
 class RequestState(models.Model):

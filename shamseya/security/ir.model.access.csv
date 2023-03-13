@@ -19,5 +19,3 @@ access_emergency,emergency,model_emergency,,1,1,1,1
 access_follow_up_issue,follow_up_issue,model_follow_up_issue,,1,1,1,1
 access_case_document,case_document,model_case_document,,1,1,1,1
 access_health_insurance,health_insurance,model_health_insurance,,1,1,1,1
-access_social_insurance,social_insurance,model_social_insurance,,1,1,1,1
-

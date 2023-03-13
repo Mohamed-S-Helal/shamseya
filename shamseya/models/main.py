@@ -119,6 +119,7 @@ class Case(models.Model):
     create_uid = fields.Many2one('res.users', string='Created By', readonly=0)
     referral = fields.Many2one('referral', string='Refered By')
     income_resource = fields.Many2one('income.resource', string="Family Income Resource")
+    pension = fields.Boolean(related='income_resource.pension')
     pension_type = fields.Many2one('pension.type')
     currency_id = fields.Many2one('res.currency', related='country_id.currency_id')
     average_income = fields.Monetary('Average Income', currency_field='currency_id')
@@ -134,7 +135,14 @@ class Case(models.Model):
         ('6', 'كارت خدمات متكاملة'),
     ], default='1', string='نوع التغطية الصحية')
 
-    social_insurance_id = fields.Many2one('social.insurance', string='نوع التأمين الاجتماعي')
+    initiative = fields.Selection([
+        ('1', 'مبادرة علاج غير القادرين'),
+        ('2', 'مبادرة صحة المرأة'),
+        ('3', 'مبادرة 100 مليون صحة'),
+        ('4', 'أخرى'),
+    ], default='1', string='نوع المبادرة')
+
+    # social_insurance_id = fields.Many2one('social.insurance', string='نوع التأمين الاجتماعي')
     know_social_insurance_code = fields.Boolean(string="الرقم التأميني")
     social_insurance_code = fields.Char()
     mother_name = fields.Char()
@@ -147,7 +155,6 @@ class Case(models.Model):
 
     # health_coverage = fields.Boolean()
     # health_coverage_type = fields.Many2one('health.coverage')
-
 
     requests = fields.One2many('case.request', 'case_id')
 
